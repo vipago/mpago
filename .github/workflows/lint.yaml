@@ -1,0 +1,17 @@
+name: "[Lint] Check code"
+on: [push]
+jobs:
+  lint:
+      runs-on: ubuntu-latest
+      name: Check code
+      steps:
+        - uses: actions/checkout@v2
+        - name: Run Clippy
+          run: cargo clippy
+  format:
+      runs-on: ubuntu-latest
+      name: Check formatting
+      steps:
+        - uses: actions/checkout@v2
+        - name: Run cargo format check
+          run: cargo fmt --check

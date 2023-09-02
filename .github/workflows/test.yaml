@@ -1,0 +1,12 @@
+name: "[Test] Run tests"
+on: [push]
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    name: Run tests
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests
+        run: cargo test
+        env:
+          MERCADO_PAGO_ACCESS: ${secrets.MERCADO_PAGO_ACCESS}

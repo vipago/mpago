@@ -9,4 +9,4 @@ jobs:
       - name: Run tests
         run: cargo test
         env:
-          MERCADO_PAGO_ACCESS: ${secrets.MERCADO_PAGO_ACCESS}
+          MERCADO_PAGO_ACCESS: ${{ secrets.MERCADO_PAGO_ACCESS }}

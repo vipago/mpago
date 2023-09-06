@@ -1,7 +1,10 @@
+#![recursion_limit = "256"]
 use thiserror::Error;
 
 pub mod client;
 pub mod oauth;
+pub mod payer;
+pub mod payments;
 
 pub static API_BASE_URL: &str = "https://api.mercadopago.com";
 

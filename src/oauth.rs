@@ -1,4 +1,7 @@
-use crate::{APIError, API_BASE_URL};
+use crate::{
+    common::{resolve_json, MercadoPagoRequestError},
+    API_BASE_URL,
+};
 
 #[derive(serde::Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -38,7 +41,7 @@ impl OAuth {
         client_secret: impl ToString,
         code: impl ToString,
         redirect_uri: impl ToString,
-    ) -> Result<OAuthResponseBody, APIError> {
+    ) -> Result<OAuthResponseBody, MercadoPagoRequestError> {
         let client_http = reqwest::Client::new();
 
         let authorization_response = client_http
@@ -52,16 +55,14 @@ impl OAuth {
             .send()
             .await?;
 
-        let body = authorization_response.json::<OAuthResponseBody>().await?;
-
-        Ok(body)
+        resolve_json::<OAuthResponseBody>(authorization_response).await
     }
 
     pub async fn refresh_access(
         client_id: impl ToString,
         client_secret: impl ToString,
         refresh_token: impl ToString,
-    ) -> Result<OAuthResponseBody, APIError> {
+    ) -> Result<OAuthResponseBody, MercadoPagoRequestError> {
         let client_http = reqwest::Client::new();
 
         let authorization_response = client_http
@@ -74,26 +75,22 @@ impl OAuth {
             .send()
             .await?;
 
-        let body = authorization_response.json::<OAuthResponseBody>().await?;
-
-        Ok(body)
+        resolve_json::<OAuthResponseBody>(authorization_response).await
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{oauth::OAuth, APIError};
+    use crate::oauth::OAuth;
     #[tokio::test]
     #[ignore = "This test can't be automated. It needs a code provided by login. Check https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/additional-content/security/oauth/creation"]
-    async fn test_create_and_refresh_access() -> Result<(), APIError> {
-        let create_res = OAuth::create_access("", "", "", "").await?;
+    async fn test_create_and_refresh_access() {
+        let create_res = OAuth::create_access("", "", "", "").await.unwrap();
 
         println!("{create_res:?}");
 
-        let refresh_res = OAuth::refresh_access("", "", "").await?;
+        let refresh_res = OAuth::refresh_access("", "", "").await.unwrap();
 
         println!("{refresh_res:?}");
-
-        Ok(())
     }
 }

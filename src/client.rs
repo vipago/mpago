@@ -1,6 +1,9 @@
 use reqwest::Method;
 
-use crate::{APIError, API_BASE_URL};
+use crate::{
+    common::{MercadoPagoError, MercadoPagoRequestError},
+    API_BASE_URL,
+};
 
 pub struct MercadoPagoClient {
     access_token: String,
@@ -18,7 +21,7 @@ impl MercadoPagoClient {
             .bearer_auth(&self.access_token)
     }
 
-    pub async fn check_credentials(&self) -> Result<(), APIError> {
+    pub async fn check_credentials(&self) -> Result<(), MercadoPagoRequestError> {
         let response = self
             .start_request(Method::GET, "/v1/payment_methods")
             .send()
@@ -26,10 +29,9 @@ impl MercadoPagoClient {
 
         match response.status().as_u16() {
             200 => Ok(()),
-            400 => Err(APIError::BadRequest),
-            401 => Err(APIError::Unauthorized),
-            404 => Err(APIError::NotFound),
-            _ => Err(APIError::InternalServerError),
+            _ => Err(MercadoPagoRequestError::MercadoPago(
+                response.json::<MercadoPagoError>().await?,
+            )),
         }
     }
 }

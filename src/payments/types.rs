@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_enum_str::{Deserialize_enum_str, Serialize_enum_str};
 
-use crate::payer::{AdditionalInfoPayer, Payer, PayerType};
+use crate::payer::{AdditionalInfoPayer, Payer};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct PaymentCreateOptions {
@@ -52,15 +52,10 @@ impl Default for PaymentCreateOptions {
             issuer_id: None,
             notification_url: None,
             payer: Payer {
-                entity_type: Some(EntityType::Individual),
-                r#type: Some(PayerType::Guest),
-                id: None,
-                email: "".to_string(),
-                identification: None,
-                first_name: None,
-                last_name: None,
+                email: "test@testmail.com".to_string(),
+                ..Default::default()
             },
-            payment_method_id: PaymentMethodId::AccountMoney,
+            payment_method_id: PaymentMethodId::Pix,
             statement_descriptor: None,
             token: None,
             transaction_amount: 0.0,
@@ -69,7 +64,7 @@ impl Default for PaymentCreateOptions {
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-pub struct PaymentCreateResponse {
+pub struct PaymentResponse {
     pub id: u64,
     pub date_created: String,
     pub date_approved: Option<String>,
@@ -258,7 +253,7 @@ pub enum PaymentStatusDetail {
 #[derive(Deserialize_enum_str, Serialize_enum_str, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentStatus {
-    // Pending,
+    Pending,
     Approved,
     Authorized,
     InProcess,
@@ -305,9 +300,10 @@ pub enum OperationType {
     Unknown(String),
 }
 
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum PaymentMethodId {
+    #[default]
     Pix,
     Elo,
     Visa,
@@ -333,11 +329,11 @@ pub enum PaymentMethodId {
     Unknown(String),
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct AdditionalInfo {
     pub ip_address: Option<String>,
     #[serde(default)]
-    pub items: Vec<ProductItems>,
+    pub items: Vec<ProductItem>,
     pub payer: Option<AdditionalInfoPayer>,
     pub shipments: Option<Shipments>,
 }
@@ -365,15 +361,15 @@ pub enum IdentificationType {
     Unknown(String),
 }
 
-#[derive(Deserialize, Serialize, Debug)]
-pub struct ProductItems {
-    pub id: String,
-    pub title: String,
-    pub description: String,
-    pub picture_url: String,
-    pub category_id: String,
-    pub quantity: u32,
-    pub unit_price: f32,
+#[derive(Deserialize, Serialize, Debug, Clone, Default)]
+pub struct ProductItem {
+    pub id: Option<String>,
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub picture_url: Option<String>,
+    pub category_id: Option<String>,
+    pub quantity: Option<String>,
+    pub unit_price: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::payments::types::{EntityType, IdentificationType, PhoneNumber};
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct Payer {
     pub entity_type: Option<EntityType>,
     pub r#type: Option<PayerType>,

@@ -1,8 +1,19 @@
 use serde::{Deserialize, Serialize};
 use serde_enum_str::{Deserialize_enum_str, Serialize_enum_str};
+use serde_with::skip_serializing_none;
 
 use crate::payer::{AdditionalInfoPayer, Payer};
 
+#[skip_serializing_none]
+#[derive(Deserialize, Serialize, Debug, Default)]
+pub struct PaymentUpdateOptions {
+    pub capture: Option<bool>,
+    pub date_of_expiration: Option<String>,
+    pub status: Option<PaymentStatus>,
+    pub transaction_amount: Option<f32>,
+}
+
+#[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct PaymentSearchOptions {
     pub sort: Option<PaymentSearchSort>,
@@ -15,7 +26,7 @@ pub struct PaymentSearchOptions {
     pub end_date: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, Copy)]
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PaymentSearchCriteria {
     #[serde(rename = "asc")]
     Ascending,
@@ -23,7 +34,7 @@ pub enum PaymentSearchCriteria {
     Descending,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone, Copy)]
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentSearchSort {
     DateApproved,
@@ -76,6 +87,7 @@ pub struct Paging {
     pub offset: usize,
 }
 
+#[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug)]
 pub struct PaymentCreateOptions {
     pub additional_info: AdditionalInfo,
@@ -207,7 +219,7 @@ pub struct ApplicationData {
     pub version: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentProcessingMode {
     Aggregator,
@@ -245,14 +257,14 @@ pub struct FeeDetails {
     pub fee_payer: FeePayer,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum FeePayer {
     Collector,
     Payer,
 }
 
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum FeeDetailsType {
     MercadopagoFee,
@@ -278,7 +290,7 @@ pub struct PaymentTransactionDetails {
     pub acquirer_reference: Option<String>,
 }
 
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
 pub enum CurrencyId {
     ARS,
     BRL,
@@ -300,7 +312,7 @@ pub enum CurrencyId {
     Unknown(String),
 }
 
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentStatusDetail {
     Accredited,
@@ -323,7 +335,7 @@ pub enum PaymentStatusDetail {
     Unknown(String),
 }
 
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentStatus {
     Pending,
@@ -339,7 +351,7 @@ pub enum PaymentStatus {
     Unknown(String),
 }
 
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentTypeId {
     AccountMoney,
@@ -357,7 +369,7 @@ pub enum PaymentTypeId {
     Unknown(String),
 }
 
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum OperationType {
     Investment,
@@ -373,7 +385,7 @@ pub enum OperationType {
     Unknown(String),
 }
 
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, Default)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, Default, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum PaymentMethodId {
     #[default]
@@ -411,14 +423,14 @@ pub struct AdditionalInfo {
     pub shipments: Option<Shipments>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum EntityType {
     Individual,
     Association,
 }
 
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug)]
+#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
 pub enum IdentificationType {
     CPF,
     CNPJ,
@@ -435,6 +447,7 @@ pub enum IdentificationType {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
+#[skip_serializing_none]
 pub struct ProductItem {
     pub id: Option<String>,
     pub title: Option<String>,

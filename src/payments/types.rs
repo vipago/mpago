@@ -3,6 +3,79 @@ use serde_enum_str::{Deserialize_enum_str, Serialize_enum_str};
 
 use crate::payer::{AdditionalInfoPayer, Payer};
 
+#[derive(Deserialize, Serialize, Debug, Default, Clone)]
+pub struct PaymentSearchOptions {
+    pub sort: Option<PaymentSearchSort>,
+    pub limit: Option<usize>,
+    pub offset: Option<usize>,
+    pub criteria: Option<PaymentSearchCriteria>,
+    pub external_reference: Option<String>,
+    pub range: Option<String>,
+    pub begin_date: Option<String>,
+    pub end_date: Option<String>,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy)]
+pub enum PaymentSearchCriteria {
+    #[serde(rename = "asc")]
+    Ascending,
+    #[serde(rename = "desc")]
+    Descending,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone, Copy)]
+#[serde(rename_all = "snake_case")]
+pub enum PaymentSearchSort {
+    DateApproved,
+    DateCreated,
+    DateLastUpdated,
+    Id,
+    MoneyReleaseDate,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct PartialPaymentResult {
+    pub id: u64,
+    pub date_created: String,
+    pub date_approved: Option<String>,
+    pub date_last_update: Option<String>,
+    pub date_of_expiration: String,
+    pub operation_type: OperationType,
+    pub payment_method_id: PaymentMethodId,
+    pub payment_type_id: PaymentTypeId,
+    pub status: PaymentStatus,
+    pub status_detail: Option<PaymentStatusDetail>,
+    pub currency_id: Option<CurrencyId>,
+    pub description: Option<String>,
+    pub live_mode: bool,
+    pub authorization_code: Option<String>,
+    pub payer: Payer,
+    // pub metadata: T,
+    pub external_reference: Option<String>,
+    pub transaction_amount: f32,
+    pub installments: u32,
+    pub processing_mode: PaymentProcessingMode,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct PaymentSearchResponse {
+    pub paging: Paging,
+    pub results: Vec<PartialPaymentResult>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct PaymentSearchPaginator {
+    pub payment_response: PaymentSearchResponse,
+    pub query: PaymentSearchOptions,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct Paging {
+    pub total: usize,
+    pub limit: usize,
+    pub offset: usize,
+}
+
 #[derive(Deserialize, Serialize, Debug)]
 pub struct PaymentCreateOptions {
     pub additional_info: AdditionalInfo,

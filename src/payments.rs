@@ -2,10 +2,12 @@ use crate::payer::Payer;
 
 use self::create_builder::PaymentCreateBuilder;
 use self::get_builder::PaymentGetBuilder;
-use self::types::{AdditionalInfo, PaymentCreateOptions, PaymentMethodId};
+use self::search_builder::PaymentSearchBuilder;
+use self::types::{AdditionalInfo, PaymentCreateOptions, PaymentMethodId, PaymentSearchOptions};
 
 pub mod create_builder;
 pub mod get_builder;
+pub mod search_builder;
 pub mod types;
 
 pub fn create(
@@ -29,8 +31,8 @@ pub fn create(
     })
 }
 
-pub fn search() {
-    todo!()
+pub fn search(options: PaymentSearchOptions) -> PaymentSearchBuilder {
+    PaymentSearchBuilder(options)
 }
 
 pub fn get(id: u64) -> PaymentGetBuilder {

@@ -12,9 +12,29 @@ use crate::{
     common::{resolve_json, MercadoPagoRequestError},
 };
 
+/// Builder for search payments
+///
+/// # Arguments
+///
+/// * `options` - Options to search for payments
+///
+/// # Example
+/// ```
+/// PaymentSearchBuilder(
+///     PaymentSearchOptions {
+///         limit: Some(10),
+///         sort: Some(PaymentSearchSort::DateLastUpdated)
+///         ..Default::default()
+///     }
+/// )
+/// ```
+///
+/// # Docs
+/// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get>
 pub struct PaymentSearchBuilder(pub PaymentSearchOptions);
 
 impl PaymentSearchBuilder {
+    /// Send the request
     pub async fn send<'a>(
         self,
         mp_client: &'a MercadoPagoClient,
@@ -67,6 +87,7 @@ impl PaymentSearchBuilder {
 }
 
 impl PartialPaymentResult {
+    /// Returns the full payment information
     pub async fn fetch_full_payment(
         self,
         mp_client: &MercadoPagoClient,

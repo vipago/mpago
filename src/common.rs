@@ -5,6 +5,7 @@ use thiserror::Error;
 #[allow(unused_imports)]
 use crate::{client::MercadoPagoClient, payments::types::PaymentCreateOptions};
 
+/// Used for solving json responses from Mercado Pago. If there is an error, [`MercadoPagoRequestError`] handles both the request body errors from Mercado Pago and Reqwest errors.
 pub async fn resolve_json<T>(response: Response) -> Result<T, MercadoPagoRequestError>
 where
     T: DeserializeOwned,
@@ -17,6 +18,7 @@ where
     }
 }
 
+/// Enum to handle Mercado Pago errors and Reqwest errors
 #[derive(Error, Debug)]
 pub enum MercadoPagoRequestError {
     #[error("{0}")]
@@ -25,22 +27,37 @@ pub enum MercadoPagoRequestError {
     MercadoPago(MercadoPagoError),
 }
 
+/// Body sent by Mercado Pago when there is something wrong
 #[derive(Deserialize, Serialize, Debug)]
 pub struct MercadoPagoError {
+    /// Resume of the error
     pub message: String,
+    /// Identificator of the error. It usually has to do with the HTTP status.
     pub error: String,
+    /// HTTP Status
     pub status: u16,
+    /// A list of causes of the error
     pub cause: Vec<MercadoPagoErrorCause>,
 }
 
+/// Error cause
 #[derive(Deserialize, Serialize, Debug)]
 pub struct MercadoPagoErrorCause {
+    /// Code related to Mercado Pago errors. It should be referenced in the documentation for each route.
     pub code: u32,
+    /// Brief description of the error
     pub description: String,
+    /// Date when error occurs
+    ///
+    /// ## Important Note
+    /// This field is returning a date with some UUID togheter. It should be fixed later.
+    ///
+    /// `"08-09-2023T22:33:32UTC;c68defe3-5b82-4775-bc45-4349daa88bb0"`
     #[serde(rename = "data")]
     pub date: String,
 }
 
+/// Function to create client for testing
 #[cfg(test)]
 pub fn create_test_client() -> MercadoPagoClient {
     use crate::client::MercadoPagoClientBuilder;
@@ -52,6 +69,7 @@ pub fn create_test_client() -> MercadoPagoClient {
     )
 }
 
+/// Function to return test payment option
 #[cfg(test)]
 pub fn get_test_payment_options() -> PaymentCreateOptions {
     use crate::{payer::Payer, payments::types::PaymentMethodId};

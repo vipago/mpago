@@ -8,9 +8,69 @@ use crate::{
 
 use super::types::{PaymentCreateOptions, ProductItem};
 
+/// Builder for creating a payment
+///
+/// # Arguments
+///
+/// * `options` - Options to create the payment.
+///
+/// # Example
+/// ```
+/// PaymentCreateBuilder(
+///     PaymentCreateOptions {
+///         transaction_amount: 25.0,
+///         installments: 1,
+///         description: "Some product".to_string(),
+///         payment_method_id: PaymentMethodId::Pix,
+///         payer: Payer {
+///             email: "test_user@testmail.com".to_string(),
+///             ..Default::default()
+///         },
+///         ..Default::default()
+///     }
+/// )
+/// ```
+///
+/// # Docs
+/// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post>
 pub struct PaymentCreateBuilder(pub PaymentCreateOptions);
 
 impl PaymentCreateBuilder {
+    /// Sets the items for `additonal_info.items`
+    ///
+    /// # Arguments
+    ///
+    /// * `items` - An iterator of the items.
+    ///
+    /// # Example
+    /// ```
+    /// PaymentCreateBuilder(
+    ///     PaymentCreateOptions {
+    ///         transaction_amount: 25.0,
+    ///         installments: 1,
+    ///         description: "Some product".to_string(),
+    ///         payment_method_id: PaymentMethodId::Pix,
+    ///         payer: Payer {
+    ///             email: "test_user@testmail.com".to_string(),
+    ///             ..Default::default()
+    ///         },
+    ///         ..Default::default()
+    ///     }
+    /// )
+    /// .set_items(
+    ///     [
+    ///         ProductItem {
+    ///             // `quantity` and `unit_price` need to be String due to the Mercado Pago API
+    ///             quantity: Some("1".to_string()),
+    ///             unit_price: Some("25.0".to_string()),
+    ///             title: Some("Some product".to_string()),
+    ///             id: Some("1".to_string()),
+    ///             ..Default::default()
+    ///         }
+    ///     ]
+    ///    .into_iter(),
+    ///);
+    /// ```
     pub fn set_items(mut self, items: impl Iterator<Item = ProductItem>) -> Self {
         let builder_items = &mut self.0.additional_info.items;
 
@@ -19,6 +79,41 @@ impl PaymentCreateBuilder {
         self
     }
 
+    /// Add items in `additonal_info.items`
+    ///
+    /// # Arguments
+    ///
+    /// * `items` - An iterator of the items.
+    ///
+    /// # Example
+    /// ```
+    /// PaymentCreateBuilder(
+    ///     PaymentCreateOptions {
+    ///         transaction_amount: 25.0,
+    ///         installments: 1,
+    ///         description: "Some product".to_string(),
+    ///         payment_method_id: PaymentMethodId::Pix,
+    ///         payer: Payer {
+    ///             email: "test_user@testmail.com".to_string(),
+    ///             ..Default::default()
+    ///         },
+    ///         ..Default::default()
+    ///     }
+    /// )
+    /// .add_items(
+    ///     [
+    ///         ProductItem {
+    ///             // `quantity` and `unit_price` need to be String due to the Mercado Pago API
+    ///             quantity: Some("1".to_string()),
+    ///             unit_price: Some("25.0".to_string()),
+    ///             title: Some("Some product".to_string()),
+    ///             id: Some("1".to_string()),
+    ///             ..Default::default()
+    ///         }
+    ///     ]
+    ///    .into_iter(),
+    ///);
+    /// ```
     pub fn add_items(mut self, items: impl Iterator<Item = ProductItem>) -> Self {
         let builder_items = &mut self.0.additional_info.items;
 
@@ -27,6 +122,7 @@ impl PaymentCreateBuilder {
         self
     }
 
+    /// Send the request
     pub async fn send(
         self,
         mp_client: &MercadoPagoClient,

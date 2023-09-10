@@ -5,12 +5,26 @@ use crate::{
     API_BASE_URL,
 };
 
+/// Client for Mercado Pago
 pub struct MercadoPagoClient {
     access_token: String,
     client_http: reqwest::Client,
 }
 
 impl MercadoPagoClient {
+    /// Request builder that set API url and token
+    ///
+    /// # Arguments
+    ///
+    /// * `method` - Http method
+    /// * `path` - Also called route. Is the path from API.
+    ///
+    /// # Example
+    /// ```
+    /// let client = MercadoPagoClientBuilder::create_with_access_token("SOME_ACCESS_TOKEN");
+    ///
+    /// client.start_request(request::Method::POST, "/v1/payment_methods")
+    /// ```
     pub fn start_request(
         &self,
         method: reqwest::Method,
@@ -21,6 +35,7 @@ impl MercadoPagoClient {
             .bearer_auth(&self.access_token)
     }
 
+    ///Check if credentials (`access_token`) are valid
     pub async fn check_credentials(&self) -> Result<(), MercadoPagoRequestError> {
         let response = self
             .start_request(Method::GET, "/v1/payment_methods")
@@ -36,9 +51,11 @@ impl MercadoPagoClient {
     }
 }
 
+/// Builder for [`MercadoPagoClient`]
 pub struct MercadoPagoClientBuilder {}
 
 impl MercadoPagoClientBuilder {
+    /// Create a [`MercadoPagoClient`] with the access_token
     pub fn create_with_access_token(access_token: impl ToString) -> MercadoPagoClient {
         MercadoPagoClient {
             access_token: access_token.to_string(),

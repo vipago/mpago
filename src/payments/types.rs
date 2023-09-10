@@ -5,9 +5,9 @@ use serde_with::skip_serializing_none;
 use crate::payer::{AdditionalInfoPayer, Payer};
 
 /// # PaymentUpdateOptions
-/// Struct to use in `PaymentUpdateBuilder`
-/// 
-/// https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_id/put
+/// Struct to use in [`PaymentUpdateBuilder`](crate::payments::PaymentUpdateBuilder)
+///
+/// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_id/put>
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug, Default)]
 pub struct PaymentUpdateOptions {
@@ -20,9 +20,9 @@ pub struct PaymentUpdateOptions {
 }
 
 /// # PaymentSearchOptions
-/// Struct to use in `PaymentSearchBuilder`
-/// 
-/// https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get
+/// Struct to use in [`PaymentSearchBuilder`](crate::payments::PaymentSearchBuilder)
+///
+/// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get>
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct PaymentSearchOptions {
@@ -34,28 +34,30 @@ pub struct PaymentSearchOptions {
     pub offset: Option<usize>,
     /// Sorts the payment in ascending or descending order.
     pub criteria: Option<PaymentSearchCriteria>,
-    /// It is an external reference for the payment. It can be, for example, a hash code from the Central Bank, serving as an origin identifier for the transaction.
+    /// It is an external reference for the payment.
+    ///
+    /// It can be, for example, a hash code from the Central Bank, serving as an origin identifier for the transaction.
     pub external_reference: Option<String>,
     /// Parameter used to define the search interval for payments.
-    /// 
+    ///
     /// It is related to `begin_date` and `end_date`
     pub range: Option<PaymentSearchRange>,
-    /// Sets the start of the search interval for payments. 
-    /// 
-    /// Its format can be a relative date - `"NOW-XDAYS"`, `"NOW-XMONTHS"` - or an absolute date in [`ISO8601`](https://www.ionos.com/digitalguide/websites/web-development/iso-8601/) format. 
-    /// 
+    /// Sets the start of the search interval for payments.
+    ///
+    /// Its format can be a relative date - `"NOW-XDAYS"`, `"NOW-XMONTHS"` - or an absolute date in [`ISO8601`](https://www.ionos.com/digitalguide/websites/web-development/iso-8601/) format.
+    ///
     /// If not specified, it defaults to `"NOW-3MONTHS"`.
     pub begin_date: Option<String>,
-    /// Sets the end of the search interval for payments. 
-    /// 
-    /// Its format can be a relative date - `"NOW-XDAYS"`, `"NOW-XMONTHS"` - or an absolute date in [`ISO8601`](https://www.ionos.com/digitalguide/websites/web-development/iso-8601/) format. 
-    /// 
+    /// Sets the end of the search interval for payments.
+    ///
+    /// Its format can be a relative date - `"NOW-XDAYS"`, `"NOW-XMONTHS"` - or an absolute date in [`ISO8601`](https://www.ionos.com/digitalguide/websites/web-development/iso-8601/) format.
+    ///
     /// If not specified, it defaults to `"NOW-3MONTHS"`.
     pub end_date: Option<String>,
 }
 
 /// Parameter used to define the search interval for payments.
-/// 
+///
 /// It is related to `begin_date` and `end_date`
 #[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
@@ -63,7 +65,7 @@ pub enum PaymentSearchRange {
     DateApproved,
     DateCreated,
     DateLastUpdated,
-    MoneyReleaseDate
+    MoneyReleaseDate,
 }
 
 /// Sorts the payment in ascending or descending order.
@@ -88,8 +90,8 @@ pub enum PaymentSearchSort {
 
 /// # PartialPaymentResult
 /// Essential information of Payment response.
-/// 
-/// Used in `PaymentSearch` to save memory.
+///
+/// Used in [`PaymentSearchResponse`] to save memory.
 #[derive(Deserialize, Serialize, Debug)]
 pub struct PartialPaymentResult {
     pub id: u64,
@@ -116,8 +118,8 @@ pub struct PartialPaymentResult {
     pub description: Option<String>,
     /// Indicates whether the payment was made in a production environment or a test environment. If `true`, the refund will be processed in production mode. If `false`, the refund will be processed in sandbox mode.
     pub live_mode: bool,
-    /// Transaction authorization code for payments with `"payment_method_type"` of the types `"credit_card"`, `"debit_card"`, and `"voucher_card"` (voucher card for benefits, like Alelo). 
-    /// 
+    /// Transaction authorization code for payments with `"payment_method_type"` of the types `"credit_card"`, `"debit_card"`, and `"voucher_card"` (voucher card for benefits, like Alelo).
+    ///
     /// In summary, this code is used for card transactions. The code is numeric and consists of 6 digits.
     pub authorization_code: Option<String>,
     /// Payer's information - ID (identification number), email, identification (type and document number).
@@ -131,11 +133,11 @@ pub struct PartialPaymentResult {
 }
 
 /// # PaymentSearchResponse
-/// Used in pagination of `PaymentSearchBuilder`
-/// 
+/// Used in pagination of [`PaymentSearchBuilder`](crate::payments::PaymentSearchBuilder)
+///
 /// Response from `/v1/payments/search`
-/// 
-/// https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get
+///
+/// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get>
 #[derive(Deserialize, Serialize, Debug)]
 pub struct PaymentSearchResponse {
     /// Pagination information for search results.
@@ -155,9 +157,9 @@ pub struct Paging {
 }
 
 /// # PaymentCreateOptions
-/// Struct to use in `PaymentCreateBuilder`
-/// 
-/// https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post
+/// Struct to use in [`PaymentCreateBuilder`](crate::payments::PaymentCreateBuilder)
+///
+/// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post>
 #[skip_serializing_none]
 #[derive(Deserialize, Serialize, Debug)]
 pub struct PaymentCreateOptions {
@@ -171,9 +173,9 @@ pub struct PaymentCreateOptions {
     pub callback_url: Option<String>,
     /// It is the identifier of the entity that models the nature of discounts. All coupons come from a single campaign. The campaign configures, among other things, the available budget balance, dates during which the coupons can be used, rules for coupon application, among others. It represents the promise of a discount.
     pub campaign_id: Option<u32>,
-    /// It's a boolean field present in two-step payments (like debit card payments). 
-    /// 
-    /// In this type of payment, which is done asynchronously, first, the purchase amount is reserved (`capture = false`). This amount is captured and not immediately debited from the account. 
+    /// It's a boolean field present in two-step payments (like debit card payments).
+    ///
+    /// In this type of payment, which is done asynchronously, first, the purchase amount is reserved (`capture = false`). This amount is captured and not immediately debited from the account.
     /// When the money is actually transferred to the collector (the recipient of the payment), the capture of the amount is performed (`capture = true`).
     pub capture: Option<bool>,
     /// It is the value of the discount coupon.
@@ -270,8 +272,8 @@ pub struct PaymentResponse {
     pub description: Option<String>,
     /// Indicates whether the payment was made in a production environment or a test environment. If `true`, the refund will be processed in production mode. If `false`, the refund will be processed in sandbox mode.
     pub live_mode: bool,
-    /// Transaction authorization code for payments with `"payment_method_type"` of the types `"credit_card"`, `"debit_card"`, and `"voucher_card"` (voucher card for benefits, like Alelo). 
-    /// 
+    /// Transaction authorization code for payments with `"payment_method_type"` of the types `"credit_card"`, `"debit_card"`, and `"voucher_card"` (voucher card for benefits, like Alelo).
+    ///
     /// In summary, this code is used for card transactions. The code is numeric and consists of 6 digits.
     pub authorization_code: Option<String>,
     /// This field is used to identify if a payment is "PNF" (payment in the flow). Payment in the flow is a method of releasing funds where the installments received by a seller are released over the course of months (corresponding to the number of installments). The possible values for this field are `None` or `"payment_in_flow"`.
@@ -300,8 +302,8 @@ pub struct PaymentResponse {
     pub coupon_amount: Option<f32>,
     /// Attribute that commonly contains an agreement on how much will be charged to the user (typically, this field is more relevant for Marketplace payments). Pricing and fees are calculated based on this identifier.
     pub differencial_pricing_id: Option<String>,
-    /// Pricing scheme applied by Mercado Pago. It is a field that represents information about a type of financing (installment plan). 
-    /// 
+    /// Pricing scheme applied by Mercado Pago. It is a field that represents information about a type of financing (installment plan).
+    ///
     /// For example, `"ahora12"` is a schema that indicates that the payment is divided into 12 installments. Additionally, the financing may have an additional cost, and this cost is included in the same response, indicating who it applies to (payer/collector).
     pub deduction_schema: Option<String>,
     pub transaction_details: Option<PaymentTransactionDetails>,
@@ -458,9 +460,9 @@ pub enum CurrencyId {
     Unknown(String),
 }
 
+/// Detail of the outcome of the collection.
 #[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
-/// Detail of the outcome of the collection.
 pub enum PaymentStatusDetail {
     Accredited,
     PendingContingency,
@@ -510,9 +512,9 @@ pub enum PaymentStatus {
     Unknown(String),
 }
 
+/// It is the type of payment method (credit card, bank transfer, boleto, ATM, etc.).
 #[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
-/// It is the type of payment method (credit card, bank transfer, boleto, ATM, etc.).
 pub enum PaymentTypeId {
     /// Money in the Mercado Pago account.
     AccountMoney,
@@ -541,9 +543,9 @@ pub enum PaymentTypeId {
     Unknown(String),
 }
 
+/// Is the operation type
 #[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
-/// Is the operation type
 pub enum OperationType {
     /// When money is put into an investment, such as CDB, in the Mercado Pago application.
     Investment,
@@ -568,11 +570,11 @@ pub enum OperationType {
     Unknown(String),
 }
 
+/// Payment method ID. Indicates the ID of the selected payment method for making the payment.
+///
+/// Check <https://www.mercadopago.com.br/developers/pt/reference/payment_methods/_payment_methods/get>
 #[derive(Deserialize_enum_str, Serialize_enum_str, Debug, Default, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
-/// Payment method ID. Indicates the ID of the selected payment method for making the payment.
-/// 
-/// Check https://www.mercadopago.com.br/developers/pt/reference/payment_methods/_payment_methods/get
 pub enum PaymentMethodId {
     #[default]
     Pix,
@@ -637,11 +639,15 @@ pub struct ProductItem {
     pub title: Option<String>,
     pub description: Option<String>,
     pub picture_url: Option<String>,
-    /// It is the category of the item that was purchased. 
-    /// 
+    /// It is the category of the item that was purchased.
+    ///
     /// Two main forms of `category_id` can be mentioned: categories entered through a code, like `"MLB189908"`, or those that are a tag, like `"phone"`.
     pub category_id: Option<String>,
+    /// # Disclaimer
+    /// This need to be a `String` due to the Mercado Pago API.
     pub quantity: Option<String>,
+    /// # Disclaimer
+    /// This need to be a `String` due to the Mercado Pago API.
     pub unit_price: Option<String>,
 }
 

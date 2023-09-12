@@ -64,9 +64,9 @@ pub fn create_test_client() -> MercadoPagoClient {
 
     dotenvy::dotenv().ok();
 
-    MercadoPagoClientBuilder::create_with_access_token(
+    MercadoPagoClientBuilder::builder(
         std::env::var("MERCADO_PAGO_ACCESS").unwrap(),
-    )
+    ).build()
 }
 
 /// Function to return test payment option

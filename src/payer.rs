@@ -60,7 +60,6 @@ pub struct PayerIdentification {
 pub enum PayerType {
     /// Payer is a Customer and belongs to the collector.
     Customer,
-    Registered,
     /// The payer doesn't have an account.
     Guest,
 }

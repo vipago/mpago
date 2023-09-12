@@ -50,13 +50,12 @@ impl MercadoPagoClient {
             )),
         }
     }
-
 }
 
 /// Builder for [`MercadoPagoClient`]
 pub struct MercadoPagoClientBuilder {
     access_token: String,
-    base_url: String
+    base_url: String,
 }
 
 impl MercadoPagoClientBuilder {
@@ -64,23 +63,23 @@ impl MercadoPagoClientBuilder {
     pub fn builder(access_token: impl ToString) -> MercadoPagoClientBuilder {
         MercadoPagoClientBuilder {
             access_token: access_token.to_string(),
-            base_url: API_BASE_URL.to_string()
+            base_url: API_BASE_URL.to_string(),
         }
     }
-    
+
     /// Make the client use a custom base url.
     pub fn with_base_url(mut self, url: impl ToString) -> Self {
         self.base_url = url.to_string();
-        
+
         self
     }
-    
+
     /// Builld a [`MercadoPagoClient`] with the current builder.
     pub fn build(self) -> MercadoPagoClient {
         MercadoPagoClient {
             access_token: self.access_token,
             base_url: self.base_url,
-            client_http: reqwest::Client::new()
+            client_http: reqwest::Client::new(),
         }
     }
 }
@@ -93,9 +92,9 @@ mod tests {
     async fn create_client_with_access_token() {
         dotenvy::dotenv().ok();
 
-        let client = MercadoPagoClientBuilder::builder(
-            std::env::var("MERCADO_PAGO_ACCESS").unwrap(),
-        ).build();
+        let client =
+            MercadoPagoClientBuilder::builder(std::env::var("MERCADO_PAGO_ACCESS").unwrap())
+                .build();
 
         assert!(client.check_credentials().await.is_ok())
     }

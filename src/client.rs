@@ -22,6 +22,8 @@ impl MercadoPagoClient {
     ///
     /// # Example
     /// ```
+    /// use mpago::client::MercadoPagoClientBuilder;
+    ///
     /// let client = MercadoPagoClientBuilder::builder("SOME_ACCESS_TOKEN").build();
     ///
     /// client.start_request(request::Method::POST, "/v1/payment_methods")

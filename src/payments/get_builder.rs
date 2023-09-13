@@ -15,6 +15,8 @@ use super::types::PaymentResponse;
 ///
 /// # Example
 /// ```
+/// use mpago::payments::PaymentGetBuilder;
+///
 /// PaymentGetBuilder(87891224)
 /// ```
 ///

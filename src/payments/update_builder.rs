@@ -16,18 +16,23 @@ use super::types::{PartialPaymentResult, PaymentResponse, PaymentStatus, Payment
 ///
 /// # Example
 /// ```
-/// PaymentUpdateBuilder(
-///     8972364,
-///     PaymentUpdateOptions {
+/// use mpago::payments::PaymentUpdateBuilder;
+///
+/// PaymentUpdateBuilder {
+///     id: 8972364,
+///     options: PaymentUpdateOptions {
 ///         status: Ok(PaymentStatus::Cancelled),
 ///         ..Default::default()
 ///     }
-/// )
+/// }
 /// ```
 ///
 /// # Docs
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_id/put>
-pub struct PaymentUpdateBuilder(pub u64, pub PaymentUpdateOptions);
+pub struct PaymentUpdateBuilder {
+    pub id: u64,
+    pub options: PaymentUpdateOptions,
+}
 
 impl PaymentUpdateBuilder {
     /// Send the request
@@ -36,8 +41,8 @@ impl PaymentUpdateBuilder {
         mp_client: &MercadoPagoClient,
     ) -> Result<PaymentResponse, MercadoPagoRequestError> {
         let res = mp_client
-            .start_request(Method::PUT, format!("/v1/payments/{}", self.0))
-            .json(&self.1)
+            .start_request(Method::PUT, format!("/v1/payments/{}", self.id))
+            .json(&self.options)
             .send()
             .await?;
 
@@ -50,7 +55,7 @@ impl PaymentUpdateBuilder {
         mp_client: &MercadoPagoClient,
     ) -> Result<PaymentResponse, MercadoPagoRequestError> {
         let res = mp_client
-            .start_request(Method::PUT, format!("/v1/payments/{}", self.0))
+            .start_request(Method::PUT, format!("/v1/payments/{}", self.id))
             .json(&PaymentUpdateOptions {
                 status: Some(PaymentStatus::Cancelled),
                 ..Default::default()
@@ -68,13 +73,13 @@ impl PaymentResponse {
         self,
         mp_client: &MercadoPagoClient,
     ) -> Result<PaymentResponse, MercadoPagoRequestError> {
-        PaymentUpdateBuilder(
-            self.id,
-            PaymentUpdateOptions {
+        PaymentUpdateBuilder {
+            id: self.id,
+            options: PaymentUpdateOptions {
                 status: Some(PaymentStatus::Cancelled),
                 ..Default::default()
             },
-        )
+        }
         .send(mp_client)
         .await
     }
@@ -86,13 +91,13 @@ impl PartialPaymentResult {
         self,
         mp_client: &MercadoPagoClient,
     ) -> Result<PaymentResponse, MercadoPagoRequestError> {
-        PaymentUpdateBuilder(
-            self.id,
-            PaymentUpdateOptions {
+        PaymentUpdateBuilder {
+            id: self.id,
+            options: PaymentUpdateOptions {
                 status: Some(PaymentStatus::Cancelled),
                 ..Default::default()
             },
-        )
+        }
         .send(mp_client)
         .await
     }

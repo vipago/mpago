@@ -34,7 +34,8 @@ use crate::{
 pub struct PaymentSearchBuilder(pub PaymentSearchOptions);
 
 impl PaymentSearchBuilder {
-    /// Send the request
+    /// This function creates a stream of payments, it goes through all the pages.
+    /// When you fetch a payment, it will check if you reached the end of a page, if you have, it will fetch another page and returno the first payment on that page, other wise it gives you the next payment from the current page
     pub async fn send<'a>(
         self,
         mp_client: &'a MercadoPagoClient,

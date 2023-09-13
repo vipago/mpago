@@ -362,7 +362,7 @@ pub struct ApplicationData {
 #[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentProcessingMode {
-    /// The merchant will use the Mercado Pago merchant codes and will take advantage of the financial advantages that we offer.
+    /// The merchant will use the Mercado Pago merchant codes and will take advantage of the financial advantages that Mercado Pago offers.
     Aggregator,
     /// For the merchant it is necessary to have their own merchant codes for online sales and to have an agreement with each of the desired means of payment.
     Gateway,

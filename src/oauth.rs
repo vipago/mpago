@@ -56,111 +56,118 @@ pub struct OAuthResponseBody {
     /// Indicates whether the application is in production mode or test mode.
     live_mode: bool,
 }
-
-/// Struct representing OAuth
+/// Create an access token integrating an account to an application
+///
+/// # Arguments
+///
+/// * `client_id` - Unique ID that identifies your application/integration.
+/// * `client_secret` - Private key to be used in some plugins for generating payments.
+/// * `code` - Code granted by the authentication server so that the application can obtain an access token and an associated refresh token.
+/// * `redirect_uri` - URL provided in the Redirect URL field of your application.
+/// * `base_url` - If `Some`, it will change the default base url.
+///
+/// # How to get the code
+/// <https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/additional-content/security/oauth/creation>
+///
+/// # Example
+/// ```
+/// use mpago::oauth;
+///
+/// oauth::create_access(
+///     "8971239781",
+///     "RcHGkCg2VTL6cxrxzBSDQydT",
+///     "TG-817289123-241983636",
+///     "https://someniceurl.com/mercadopago/",
+///     None
+/// )
+/// ```
 ///
 /// # Docs
 /// <https://www.mercadopago.com.br/developers/pt/reference/oauth/_oauth_token/post>
-pub struct OAuth {}
+pub async fn create_access(
+    client_id: impl ToString,
+    client_secret: impl ToString,
+    code: impl ToString,
+    redirect_uri: impl ToString,
+    base_url: Option<String>,
+) -> Result<OAuthResponseBody, MercadoPagoRequestError> {
+    let client_http = reqwest::Client::new();
 
-impl OAuth {
-    /// Create an access token integrating an account to an application
-    ///
-    /// # Arguments
-    ///
-    /// * `client_id` - Unique ID that identifies your application/integration.
-    /// * `client_secret` - Private key to be used in some plugins for generating payments.
-    /// * `code` - Code granted by the authentication server so that the application can obtain an access token and an associated refresh token.
-    /// * `redirect_uri` - URL provided in the Redirect URL field of your application.
-    ///
-    /// # How to get the code
-    /// <https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/additional-content/security/oauth/creation>
-    ///
-    /// # Example
-    /// ```
-    /// OAuth::create_access(
-    ///     "8971239781",
-    ///     "RcHGkCg2VTL6cxrxzBSDQydT",
-    ///     "TG-817289123-241983636",
-    ///     "https://someniceurl.com/mercadopago/"
-    /// )
-    /// ```
-    ///
-    /// # Docs
-    /// <https://www.mercadopago.com.br/developers/pt/reference/oauth/_oauth_token/post>
-    pub async fn create_access(
-        client_id: impl ToString,
-        client_secret: impl ToString,
-        code: impl ToString,
-        redirect_uri: impl ToString,
-    ) -> Result<OAuthResponseBody, MercadoPagoRequestError> {
-        let client_http = reqwest::Client::new();
+    let authorization_response = client_http
+        .post(format!(
+            "{}/oauth/token",
+            base_url.unwrap_or_else(|| API_BASE_URL.to_string())
+        ))
+        .json(&OAuthRequestBody::AuthorizationCode {
+            client_secret: client_secret.to_string(),
+            client_id: client_id.to_string(),
+            code: code.to_string(),
+            redirect_uri: redirect_uri.to_string(),
+        })
+        .send()
+        .await?;
 
-        let authorization_response = client_http
-            .post(format!("{API_BASE_URL}/oauth/token"))
-            .json(&OAuthRequestBody::AuthorizationCode {
-                client_secret: client_secret.to_string(),
-                client_id: client_id.to_string(),
-                code: code.to_string(),
-                redirect_uri: redirect_uri.to_string(),
-            })
-            .send()
-            .await?;
+    resolve_json::<OAuthResponseBody>(authorization_response).await
+}
 
-        resolve_json::<OAuthResponseBody>(authorization_response).await
-    }
+/// Refresh an access token made by an integration
+///
+/// # Arguments
+///
+/// * `client_id` - Unique ID that identifies your application/integration.
+/// * `client_secret` - Private key to be used in some plugins for generating payments.
+/// * `refresh_token` - Value received when the access token is created.
+/// * `base_url` - If `Some`, it will change the default base url.
+///
+/// # Example
+/// ```
+/// use mpago::oauth;
+///
+/// oauth::refresh_access(
+///     "8971239781",
+///     "RcHGkCg2VTL6cxrxzBSDQydT",
+///     "TG-78293722-241983636",
+///     None
+/// ).await?;
+/// ```
+///
+/// # Docs
+/// <https://www.mercadopago.com.br/developers/pt/reference/oauth/_oauth_token/post>
+pub async fn refresh_access(
+    client_id: impl ToString,
+    client_secret: impl ToString,
+    refresh_token: impl ToString,
+    base_url: Option<String>,
+) -> Result<OAuthResponseBody, MercadoPagoRequestError> {
+    let client_http = reqwest::Client::new();
 
-    /// Refresh an access token made by an integration
-    ///
-    /// # Arguments
-    ///
-    /// * `client_id` - Unique ID that identifies your application/integration.
-    /// * `client_secret` - Private key to be used in some plugins for generating payments.
-    /// * `refresh_token` - Value received when the access token is created.
-    ///
-    /// # Example
-    /// ```
-    /// OAuth::refresh_access(
-    ///     "8971239781",
-    ///     "RcHGkCg2VTL6cxrxzBSDQydT",
-    ///     "TG-78293722-241983636",
-    /// ).await?;
-    /// ```
-    ///
-    /// # Docs
-    /// <https://www.mercadopago.com.br/developers/pt/reference/oauth/_oauth_token/post>
-    pub async fn refresh_access(
-        client_id: impl ToString,
-        client_secret: impl ToString,
-        refresh_token: impl ToString,
-    ) -> Result<OAuthResponseBody, MercadoPagoRequestError> {
-        let client_http = reqwest::Client::new();
+    let authorization_response = client_http
+        .post(format!(
+            "{}/oauth/token",
+            base_url.unwrap_or_else(|| API_BASE_URL.to_string())
+        ))
+        .json(&OAuthRequestBody::RefreshToken {
+            client_secret: client_secret.to_string(),
+            client_id: client_id.to_string(),
+            refresh_token: refresh_token.to_string(),
+        })
+        .send()
+        .await?;
 
-        let authorization_response = client_http
-            .post(format!("{API_BASE_URL}/oauth/token"))
-            .json(&OAuthRequestBody::RefreshToken {
-                client_secret: client_secret.to_string(),
-                client_id: client_id.to_string(),
-                refresh_token: refresh_token.to_string(),
-            })
-            .send()
-            .await?;
-
-        resolve_json::<OAuthResponseBody>(authorization_response).await
-    }
+    resolve_json::<OAuthResponseBody>(authorization_response).await
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::oauth::OAuth;
+    use crate::oauth::{create_access, refresh_access};
     #[tokio::test]
     #[ignore = "This test can't be automated. It needs a code provided by login. Check https://www.mercadopago.com.br/developers/pt/docs/checkout-pro/additional-content/security/oauth/creation"]
     async fn test_create_and_refresh_access() {
-        let create_res = OAuth::create_access("", "", "", "").await.unwrap();
+        let create_res = create_access("", "", "", "", None).await.unwrap();
 
         println!("{create_res:?}");
 
-        let refresh_res = OAuth::refresh_access("", "", "").await.unwrap();
+        let refresh_res = refresh_access("", "", "", None).await.unwrap();
 
         println!("{refresh_res:?}");
     }

@@ -140,7 +140,6 @@ pub struct PartialPaymentResult {
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get>
 #[derive(Deserialize, Serialize, Debug)]
 pub struct PaymentSearchResponse {
-    /// Pagination information for search results.
     pub paging: Paging,
     pub results: Vec<PartialPaymentResult>,
 }

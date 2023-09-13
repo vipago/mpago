@@ -156,7 +156,9 @@ pub struct Paging {
 }
 
 /// # PaymentCreateOptions
-/// Struct to use in [`PaymentCreateBuilder`](crate::payments::PaymentCreateBuilder)
+/// Used as the request body for creating payments
+///
+///  See [`PaymentCreateBuilder`](crate::payments::PaymentCreateBuilder) if you want to create payments.
 ///
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post>
 #[skip_serializing_none]

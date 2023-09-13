@@ -3,10 +3,11 @@ use reqwest::Method;
 use crate::{
     client::MercadoPagoClient,
     common::{resolve_json, MercadoPagoRequestError},
+    payer::Payer,
     payments::types::PaymentResponse,
 };
 
-use super::types::{PaymentCreateOptions, ProductItem};
+use super::types::{AdditionalInfo, PaymentCreateOptions, PaymentMethodId, ProductItem};
 
 /// Builder for creating a payment
 ///
@@ -16,6 +17,8 @@ use super::types::{PaymentCreateOptions, ProductItem};
 ///
 /// # Example
 /// ```
+/// use mpago::payments::PaymentCreateBuilder;
+///
 /// PaymentCreateBuilder(
 ///     PaymentCreateOptions {
 ///         transaction_amount: 25.0,
@@ -44,6 +47,8 @@ impl PaymentCreateBuilder {
     ///
     /// # Example
     /// ```
+    /// use mpago::payments::PaymentCreateBuilder;
+    ///
     /// PaymentCreateBuilder(
     ///     PaymentCreateOptions {
     ///         transaction_amount: 25.0,
@@ -87,6 +92,8 @@ impl PaymentCreateBuilder {
     ///
     /// # Example
     /// ```
+    /// use mpago::payments::PaymentCreateBuilder;
+    ///
     /// PaymentCreateBuilder(
     ///     PaymentCreateOptions {
     ///         transaction_amount: 25.0,
@@ -134,6 +141,54 @@ impl PaymentCreateBuilder {
             .await?;
 
         resolve_json::<PaymentResponse>(res).await
+    }
+
+    /// Returns a [`PaymentCreateBuilder`]
+    ///
+    /// # Arguments
+    ///
+    /// * `description` - Description of the purchased product, the payment reason.
+    /// * `payer` - Payer info
+    /// * `payment_method_id` - Indicates the identifier of the selected payment method for making the payment.
+    /// * `transaction_amount` - Amount of the payment
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use mpago::payments::PaymentCreateBuilder;
+    ///
+    /// PaymentCreateBuilder::create(
+    ///     "some product",
+    ///     Payer {
+    ///         email: "someemail@testmail.com".to_string(),
+    ///         ..Default::default()
+    ///     },
+    ///     PaymentMethodId::Pix,
+    ///     20.0,
+    /// );
+    /// ```
+    ///
+    /// # Docs
+    /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post>
+    pub fn create(
+        description: impl ToString,
+        payer: Payer,
+        payment_method_id: PaymentMethodId,
+        transaction_amount: f32,
+    ) -> PaymentCreateBuilder {
+        PaymentCreateBuilder(PaymentCreateOptions {
+            description: description.to_string(),
+            additional_info: AdditionalInfo {
+                ip_address: None,
+                items: vec![],
+                payer: None,
+                shipments: None,
+            },
+            payer,
+            payment_method_id,
+            transaction_amount,
+            ..Default::default()
+        })
     }
 }
 

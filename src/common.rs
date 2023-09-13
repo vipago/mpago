@@ -73,7 +73,7 @@ pub fn get_test_payment_options() -> PaymentCreateOptions {
     use crate::{payer::Payer, payments::types::PaymentMethodId};
 
     PaymentCreateOptions {
-        description: "Test".to_string(),
+        description: Some("Test".to_string()),
         payer: Payer {
             email: "test@testmail.uk".to_string(),
             first_name: None,

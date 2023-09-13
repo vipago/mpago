@@ -186,7 +186,7 @@ pub struct PaymentCreateOptions {
     /// Date when payment will expire. [ISO8601](https://www.ionos.com/digitalguide/websites/web-development/iso-8601/) format.
     pub date_of_expiration: Option<String>,
     /// Description of the purchased product, the payment reason.
-    pub description: String,
+    pub description: Option<String>,
     /// Attribute that commonly contains an agreement on how much will be charged to the user (typically, this field is more relevant for Marketplace payments). Pricing and fees are calculated based on this identifier.
     pub differential_pricing_id: Option<u32>,
     /// It is an external reference for the payment. It can be, for example, a hash code from the Central Bank, serving as an origin identifier for the transaction.
@@ -225,7 +225,7 @@ impl Default for PaymentCreateOptions {
             coupon_amount: None,
             coupon_code: None,
             date_of_expiration: None,
-            description: "".to_string(),
+            description: Some("".to_string()),
             differential_pricing_id: None,
             external_reference: None,
             installments: 1,

@@ -23,7 +23,7 @@ use super::types::{AdditionalInfo, PaymentCreateOptions, PaymentMethodId, Produc
 ///     PaymentCreateOptions {
 ///         transaction_amount: 25.0,
 ///         installments: 1,
-///         description: "Some product".to_string(),
+///         description: Some("Some product".to_string()),
 ///         payment_method_id: PaymentMethodId::Pix,
 ///         payer: Payer {
 ///             email: "test_user@testmail.com".to_string(),
@@ -53,7 +53,7 @@ impl PaymentCreateBuilder {
     ///     PaymentCreateOptions {
     ///         transaction_amount: 25.0,
     ///         installments: 1,
-    ///         description: "Some product".to_string(),
+    ///         description: Some("Some product".to_string()),
     ///         payment_method_id: PaymentMethodId::Pix,
     ///         payer: Payer {
     ///             email: "test_user@testmail.com".to_string(),
@@ -98,7 +98,7 @@ impl PaymentCreateBuilder {
     ///     PaymentCreateOptions {
     ///         transaction_amount: 25.0,
     ///         installments: 1,
-    ///         description: "Some product".to_string(),
+    ///         description: Some("Some product".to_string()),
     ///         payment_method_id: PaymentMethodId::Pix,
     ///         payer: Payer {
     ///             email: "test_user@testmail.com".to_string(),
@@ -177,7 +177,7 @@ impl PaymentCreateBuilder {
         transaction_amount: f32,
     ) -> PaymentCreateBuilder {
         PaymentCreateBuilder(PaymentCreateOptions {
-            description: description.to_string(),
+            description: Some(description.to_string()),
             additional_info: AdditionalInfo {
                 ip_address: None,
                 items: vec![],

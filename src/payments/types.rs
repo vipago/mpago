@@ -38,9 +38,9 @@ pub struct PaymentSearchOptions {
     ///
     /// It can be, for example, a hash code from the Central Bank, serving as an origin identifier for the transaction.
     pub external_reference: Option<String>,
-    /// Parameter used to define the search interval for payments.
-    ///
-    /// It is related to `begin_date` and `end_date`
+    /// Defines which date field Mercado Pago should check when searching using `begin_date` and `end_date`
+    /// 
+    /// What this means is that you can filter by update, created date or whatever date
     pub range: Option<PaymentSearchRange>,
     /// Sets the start of the search interval for payments.
     ///

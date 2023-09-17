@@ -28,11 +28,7 @@ impl MercadoPagoClient {
     ///
     /// client.start_request(request::Method::POST, "/v1/payment_methods")
     /// ```
-    pub fn start_request(
-        &self,
-        method: reqwest::Method,
-        path: impl ToString,
-    ) -> reqwest::RequestBuilder {
+    pub fn start_request(&self, method: Method, path: impl ToString) -> reqwest::RequestBuilder {
         self.client_http
             .request(method, format!("{}{}", self.base_url, path.to_string()))
             .bearer_auth(&self.access_token)
@@ -76,7 +72,7 @@ impl MercadoPagoClientBuilder {
         self
     }
 
-    /// Builld a [`MercadoPagoClient`] with the current builder.
+    /// Build a [`MercadoPagoClient`] with the current builder.
     pub fn build(self) -> MercadoPagoClient {
         MercadoPagoClient {
             access_token: self.access_token,

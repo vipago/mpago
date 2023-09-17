@@ -1,4 +1,5 @@
 use iso_currency::Currency;
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_enum_str::{Deserialize_enum_str, Serialize_enum_str};
 use serde_with::skip_serializing_none;
@@ -10,14 +11,15 @@ use crate::payer::{AdditionalInfoPayer, Payer};
 ///
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_id/put>
 #[skip_serializing_none]
-#[derive(Deserialize, Serialize, Debug, Default)]
+#[derive(Serialize, Debug, Default)]
 pub struct PaymentUpdateOptions {
     /// It's a boolean field that exists in two-step payments (such as debit cards). In this type of payment, which is done asynchronously, first, the purchase amount is reserved (capture = false). This amount is captured and not immediately debited from the account. When the money is actually transferred to the collector (the recipient of the payment), the capture of the amount is performed (capture = true).
     pub capture: Option<bool>,
     /// Payment expiration date. The valid format for the attribute is as follows - "yyyy-MM-dd'T'HH:mm:ssz". For example - 2022-11-17T09:37:52.000-04:00.
     pub date_of_expiration: Option<String>,
     pub status: Option<PaymentStatus>,
-    pub transaction_amount: Option<f32>,
+    #[serde(with = "rust_decimal::serde::float_option")]
+    pub transaction_amount: Option<Decimal>,
 }
 
 /// # PaymentSearchOptions
@@ -25,7 +27,7 @@ pub struct PaymentUpdateOptions {
 ///
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get>
 #[skip_serializing_none]
-#[derive(Deserialize, Serialize, Debug, Default, Clone)]
+#[derive(Serialize, Debug, Default, Clone)]
 pub struct PaymentSearchOptions {
     /// Parameter used for sorting a list of payments.
     pub sort: Option<PaymentSearchSort>,
@@ -60,7 +62,7 @@ pub struct PaymentSearchOptions {
 /// Parameter used to define the search interval for payments.
 ///
 /// It is related to `begin_date` and `end_date`
-#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Serialize, Debug, Clone, Copy, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentSearchRange {
     DateApproved,
@@ -70,7 +72,7 @@ pub enum PaymentSearchRange {
 }
 
 /// Sorts the payment in ascending or descending order.
-#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Serialize, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PaymentSearchCriteria {
     #[serde(rename = "asc")]
     Ascending,
@@ -79,7 +81,7 @@ pub enum PaymentSearchCriteria {
 }
 
 /// Parameter used for sorting a list of payments.
-#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Serialize, Debug, Clone, Copy, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentSearchSort {
     DateApproved,
@@ -93,7 +95,7 @@ pub enum PaymentSearchSort {
 /// Essential information of Payment response.
 ///
 /// Used in [`PaymentSearchResponse`] to save memory.
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct PartialPaymentResult {
     pub id: u64,
     /// Payment create date. [ISO8601](https://www.ionos.com/digitalguide/websites/web-development/iso-8601/) format.
@@ -128,7 +130,8 @@ pub struct PartialPaymentResult {
     // pub metadata: T,
     /// It is an external reference for the payment. It can be, for example, a hash code from the Central Bank, serving as an origin identifier for the transaction.
     pub external_reference: Option<String>,
-    pub transaction_amount: f32,
+    #[serde(with = "rust_decimal::serde::float")]
+    pub transaction_amount: Decimal,
     pub installments: u32,
     pub processing_mode: PaymentProcessingMode,
 }
@@ -139,14 +142,14 @@ pub struct PartialPaymentResult {
 /// Response from `/v1/payments/search`
 ///
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get>
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct PaymentSearchResponse {
     pub paging: Paging,
     pub results: Vec<PartialPaymentResult>,
 }
 
 /// Pagination information for search results.
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct Paging {
     /// Total number of items in the charge.
     pub total: usize,
@@ -163,12 +166,13 @@ pub struct Paging {
 ///
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post>
 #[skip_serializing_none]
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Serialize, Debug)]
 pub struct PaymentCreateOptions {
     /// At the Payments level, it's primarily data, and we forward this information to other APIs, such as Risco, for scoring and fraud prevention, and to Taxes to determine them for international payments.
     pub additional_info: AdditionalInfo,
     /// Commission (fee) that third parties (integrators) charge their clients, in this case, sellers, for using the marketplace platform and other services. This is a monetary amount determined by the integrator for the seller.
-    pub application_fee: Option<f32>,
+    #[serde(with = "rust_decimal::serde::float_option")]
+    pub application_fee: Option<Decimal>,
     /// When set to `true`, payments can only be `"approved"` or `"rejected"`. Otherwise, they can also result in being `"in_process"`.
     pub binary_mode: Option<bool>,
     /// URL to which Mercado Pago makes the final redirection (only for bank transfers).
@@ -181,7 +185,8 @@ pub struct PaymentCreateOptions {
     /// When the money is actually transferred to the collector (the recipient of the payment), the capture of the amount is performed (`capture = true`).
     pub capture: Option<bool>,
     /// It is the value of the discount coupon.
-    pub coupon_amount: Option<f32>,
+    #[serde(with = "rust_decimal::serde::float_option")]
+    pub coupon_amount: Option<Decimal>,
     /// Discount campaign with a specific code.
     pub coupon_code: Option<String>,
     /// Date when payment will expire. [ISO8601](https://www.ionos.com/digitalguide/websites/web-development/iso-8601/) format.
@@ -206,7 +211,8 @@ pub struct PaymentCreateOptions {
     pub statement_descriptor: Option<String>,
     /// Card token identifier (required for credit cards). The card token is created from the card's own information, increasing security during the payment process. Additionally, once the token is used for a specific purchase, it is discarded, and a new token is required for future purchases.
     pub token: Option<String>,
-    pub transaction_amount: f32,
+    #[serde(with = "rust_decimal::serde::float")]
+    pub transaction_amount: Decimal,
 }
 
 impl Default for PaymentCreateOptions {
@@ -239,12 +245,12 @@ impl Default for PaymentCreateOptions {
             payment_method_id: PaymentMethodId::Pix,
             statement_descriptor: None,
             token: None,
-            transaction_amount: 0.0,
+            transaction_amount: Decimal::new(0, 1),
         }
     }
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct PaymentResponse {
     pub id: u64,
     /// Payment create date. [ISO8601](https://www.ionos.com/digitalguide/websites/web-development/iso-8601/) format.
@@ -281,11 +287,13 @@ pub struct PaymentResponse {
     /// This field is used to identify if a payment is "PNF" (payment in the flow). Payment in the flow is a method of releasing funds where the installments received by a seller are released over the course of months (corresponding to the number of installments). The possible values for this field are `None` or `"payment_in_flow"`.
     pub money_release_schema: Option<String>,
     /// Corresponds to the values of taxes calculated for the payment.
-    pub taxes_amount: f32,
+    #[serde(with = "rust_decimal::serde::float")]
+    pub taxes_amount: Decimal,
     /// Basically, it is an object that allows for converting payments of the CBT (Cross Border Trade) type, which are international payments made in foreign currency, into dollars.
     pub counter_currency: Option<String>,
     /// Shipping charge amount.
-    pub shipping_amount: f32,
+    #[serde(with = "rust_decimal::serde::float")]
+    pub shipping_amount: Decimal,
     /// Digital identifier of the Point of Sale (POS). These are physical sales points that use card terminals for transactions.
     pub pos_id: Option<String>,
     /// Identifier of the store to which the cash register belongs.
@@ -298,10 +306,13 @@ pub struct PaymentResponse {
     pub additional_info: AdditionalInfo,
     /// It is an external reference for the payment. It can be, for example, a hash code from the Central Bank, serving as an origin identifier for the transaction.
     pub external_reference: Option<String>,
-    pub transaction_amount: f32,
-    pub transaction_amount_refunded: Option<f32>,
+    #[serde(with = "rust_decimal::serde::float")]
+    pub transaction_amount: Decimal,
+    #[serde(with = "rust_decimal::serde::float_option")]
+    pub transaction_amount_refunded: Option<Decimal>,
     /// It is the value of the discount coupon.
-    pub coupon_amount: Option<f32>,
+    #[serde(with = "rust_decimal::serde::float_option")]
+    pub coupon_amount: Option<Decimal>,
     /// Attribute that commonly contains an agreement on how much will be charged to the user (typically, this field is more relevant for Marketplace payments). Pricing and fees are calculated based on this identifier.
     pub differencial_pricing_id: Option<String>,
     /// Pricing scheme applied by Mercado Pago. It is a field that represents information about a type of financing (installment plan).
@@ -333,7 +344,7 @@ pub struct PaymentResponse {
 }
 
 /// Information about the application that processes the payment and receives regulatory data.
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct PaymentPointOfInteraction {
     pub r#type: PaymentTypeId,
     pub sub_type: Option<String>,
@@ -344,7 +355,7 @@ pub struct PaymentPointOfInteraction {
 }
 
 /// Information about the pending payment that was generated.
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct TransactionData {
     /// Base64 representation of the QR code image to be scanned for payment completion.
     pub qr_code_base64: Option<String>,
@@ -401,7 +412,8 @@ pub struct CardHolderIdentification {
 pub struct FeeDetails {
     /// Commission detail.
     pub r#type: FeeDetailsType,
-    pub amount: f32,
+    #[serde(with = "rust_decimal::serde::float")]
+    pub amount: Decimal,
     /// Who absorbs the commission cost.
     pub fee_payer: FeePayer,
 }
@@ -430,11 +442,15 @@ pub enum FeeDetailsType {
 pub struct PaymentTransactionDetails {
     /// Unique identifier for the payment method.
     pub payment_method_reference_id: Option<String>,
-    pub net_received_amount: f32,
-    pub total_paid_amount: f32,
-    pub overpaid_amount: f32,
+    #[serde(with = "rust_decimal::serde::float")]
+    pub net_received_amount: Decimal,
+    #[serde(with = "rust_decimal::serde::float")]
+    pub total_paid_amount: Decimal,
+    #[serde(with = "rust_decimal::serde::float")]
+    pub overpaid_amount: Decimal,
     pub external_resource_url: Option<String>,
-    pub installment_amount: f32,
+    #[serde(with = "rust_decimal::serde::float")]
+    pub installment_amount: Decimal,
     pub financial_institution: Option<String>,
     pub payable_deferral_period: Option<String>,
     pub acquirer_reference: Option<String>,
@@ -684,12 +700,9 @@ pub struct ProductItem {
     ///
     /// Two main forms of `category_id` can be mentioned: categories entered through a code, like `"MLB189908"`, or those that are a tag, like `"phone"`.
     pub category_id: Option<String>,
-    /// # Disclaimer
-    /// This need to be a `String` due to the Mercado Pago API.
     pub quantity: Option<String>,
-    /// # Disclaimer
-    /// This need to be a `String` due to the Mercado Pago API.
-    pub unit_price: Option<String>,
+    #[serde(with = "rust_decimal::serde::str_option")]
+    pub unit_price: Option<Decimal>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]

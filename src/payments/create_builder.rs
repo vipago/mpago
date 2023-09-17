@@ -1,4 +1,5 @@
 use reqwest::Method;
+use rust_decimal::Decimal;
 
 use crate::{
     client::MercadoPagoClient,
@@ -17,11 +18,11 @@ use super::types::{AdditionalInfo, PaymentCreateOptions, PaymentMethodId, Produc
 ///
 /// # Example
 /// ```
-/// use mpago::payments::PaymentCreateBuilder;
+/// use mpago::{payments::PaymentCreateBuilder, Decimal};
 ///
 /// PaymentCreateBuilder(
 ///     PaymentCreateOptions {
-///         transaction_amount: 25.0,
+///         transaction_amount: Decimal::from(25, 0), // 25.0
 ///         installments: 1,
 ///         description: Some("Some product".to_string()),
 ///         payment_method_id: PaymentMethodId::Pix,
@@ -39,7 +40,7 @@ use super::types::{AdditionalInfo, PaymentCreateOptions, PaymentMethodId, Produc
 pub struct PaymentCreateBuilder(pub PaymentCreateOptions);
 
 impl PaymentCreateBuilder {
-    /// Sets the items for `additonal_info.items`
+    /// Sets the items for `additional_info.items`
     ///
     /// # Arguments
     ///
@@ -47,11 +48,11 @@ impl PaymentCreateBuilder {
     ///
     /// # Example
     /// ```
-    /// use mpago::payments::PaymentCreateBuilder;
+    /// use mpago::{Decimal, payments::PaymentCreateBuilder};
     ///
     /// PaymentCreateBuilder(
     ///     PaymentCreateOptions {
-    ///         transaction_amount: 25.0,
+    ///         transaction_amount: Decimal::new(25, 0), // 25
     ///         installments: 1,
     ///         description: Some("Some product".to_string()),
     ///         payment_method_id: PaymentMethodId::Pix,
@@ -65,9 +66,9 @@ impl PaymentCreateBuilder {
     /// .set_items(
     ///     [
     ///         ProductItem {
-    ///             // `quantity` and `unit_price` need to be String due to the Mercado Pago API
+    ///             // `quantity` need to be String due to the Mercado Pago API
     ///             quantity: Some("1".to_string()),
-    ///             unit_price: Some("25.0".to_string()),
+    ///             unit_price: Some(Decimal::new(25, 0)), // 25
     ///             title: Some("Some product".to_string()),
     ///             id: Some("1".to_string()),
     ///             ..Default::default()
@@ -84,7 +85,7 @@ impl PaymentCreateBuilder {
         self
     }
 
-    /// Add items in `additonal_info.items`
+    /// Add items in `additional_info.items`
     ///
     /// # Arguments
     ///
@@ -92,11 +93,11 @@ impl PaymentCreateBuilder {
     ///
     /// # Example
     /// ```
-    /// use mpago::payments::PaymentCreateBuilder;
+    /// use mpago::{Decimal, payments::PaymentCreateBuilder};
     ///
     /// PaymentCreateBuilder(
     ///     PaymentCreateOptions {
-    ///         transaction_amount: 25.0,
+    ///         transaction_amount: Decimal::new(25, 0), // 25
     ///         installments: 1,
     ///         description: Some("Some product".to_string()),
     ///         payment_method_id: PaymentMethodId::Pix,
@@ -110,9 +111,9 @@ impl PaymentCreateBuilder {
     /// .add_items(
     ///     [
     ///         ProductItem {
-    ///             // `quantity` and `unit_price` need to be String due to the Mercado Pago API
+    ///             // `quantity` need to be String due to the Mercado Pago API
     ///             quantity: Some("1".to_string()),
-    ///             unit_price: Some("25.0".to_string()),
+    ///             unit_price: Some(Decimal::new(25, 0)), // 25
     ///             title: Some("Some product".to_string()),
     ///             id: Some("1".to_string()),
     ///             ..Default::default()
@@ -155,7 +156,7 @@ impl PaymentCreateBuilder {
     /// # Example
     ///
     /// ```
-    /// use mpago::payments::PaymentCreateBuilder;
+    /// use mpago::{Decimal, payments::PaymentCreateBuilder};
     ///
     /// PaymentCreateBuilder::create(
     ///     "some product",
@@ -164,7 +165,7 @@ impl PaymentCreateBuilder {
     ///         ..Default::default()
     ///     },
     ///     PaymentMethodId::Pix,
-    ///     20.0,
+    ///     Decimal::new(20, 0),
     /// );
     /// ```
     ///
@@ -174,7 +175,7 @@ impl PaymentCreateBuilder {
         description: impl ToString,
         payer: Payer,
         payment_method_id: PaymentMethodId,
-        transaction_amount: f32,
+        transaction_amount: Decimal,
     ) -> PaymentCreateBuilder {
         PaymentCreateBuilder(PaymentCreateOptions {
             description: Some(description.to_string()),
@@ -198,6 +199,7 @@ mod tests {
         common::{create_test_client, get_test_payment_options},
         payments::types::{PaymentCreateOptions, ProductItem},
     };
+    use rust_decimal::Decimal;
 
     use super::PaymentCreateBuilder;
 
@@ -233,7 +235,7 @@ mod tests {
         let builder = PaymentCreateBuilder(get_test_payment_options()).add_items(
             [ProductItem {
                 quantity: Some("1".to_string()),
-                unit_price: Some("10.0".to_string()),
+                unit_price: Some(Decimal::new(10, 0)),
                 title: Some("Test product".to_string()),
                 id: Some("1".to_string()),
                 ..Default::default()
@@ -246,7 +248,7 @@ mod tests {
         let builder = builder.set_items(
             [ProductItem {
                 quantity: Some("1".to_string()),
-                unit_price: Some("10.0".to_string()),
+                unit_price: Some(Decimal::new(10, 0)),
                 title: Some("Test product2".to_string()),
                 id: Some("2".to_string()),
                 ..Default::default()

@@ -1,3 +1,4 @@
+pub use rust_decimal::Decimal;
 pub mod client;
 pub mod common;
 pub mod oauth;

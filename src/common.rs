@@ -1,9 +1,8 @@
+#[allow(unused_imports)]
+use crate::{client::MercadoPagoClient, payments::types::PaymentCreateOptions};
 use reqwest::Response;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use thiserror::Error;
-
-#[allow(unused_imports)]
-use crate::{client::MercadoPagoClient, payments::types::PaymentCreateOptions};
 
 /// Used for solving json responses from Mercado Pago. If there is an error, [`MercadoPagoRequestError`] handles both the request body errors from Mercado Pago and Reqwest errors.
 pub async fn resolve_json<T>(response: Response) -> Result<T, MercadoPagoRequestError>
@@ -32,7 +31,7 @@ pub enum MercadoPagoRequestError {
 pub struct MercadoPagoError {
     /// Resume of the error
     pub message: String,
-    /// Identificator of the error. It usually has to do with the HTTP status.
+    /// Identification of the error. It usually has to do with the HTTP status.
     pub error: String,
     /// HTTP Status
     pub status: u16,
@@ -50,7 +49,7 @@ pub struct MercadoPagoErrorCause {
     /// Date when error occurs
     ///
     /// ## Important Note
-    /// This field is returning a date with some UUID togheter. It should be fixed later.
+    /// This field is returning a date with some UUID together. It should be fixed later.
     ///
     /// `"08-09-2023T22:33:32UTC;c68defe3-5b82-4775-bc45-4349daa88bb0"`
     #[serde(rename = "data")]
@@ -70,7 +69,7 @@ pub fn create_test_client() -> MercadoPagoClient {
 /// Function to return test payment option
 #[cfg(test)]
 pub fn get_test_payment_options() -> PaymentCreateOptions {
-    use crate::{payer::Payer, payments::types::PaymentMethodId};
+    use crate::{payer::Payer, payments::types::PaymentMethodId, Decimal};
 
     PaymentCreateOptions {
         description: Some("Test".to_string()),
@@ -83,7 +82,7 @@ pub fn get_test_payment_options() -> PaymentCreateOptions {
             identification: None,
             r#type: None,
         },
-        transaction_amount: 10.0,
+        transaction_amount: Decimal::new(10, 0),
         payment_method_id: PaymentMethodId::Pix,
         ..Default::default()
     }

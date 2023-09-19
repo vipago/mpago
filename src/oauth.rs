@@ -34,27 +34,27 @@ pub enum OAuthRequestBody {
 #[derive(serde::Deserialize, serde::Serialize, Debug)]
 pub struct OAuthResponseBody {
     /// Security code that identifies the user, their privileges, and an application used in various public origin requests to access protected resources.
-    access_token: String,
+    pub access_token: String,
     /// Information required for the token to be used correctly to access protected resources.
     ///
     /// The `"bearer"` type token is the only one supported by the authorization server.
-    token_type: String,
+    pub token_type: String,
     /// Fixed expiration time of the access_token expressed in seconds.
     ///
     /// By default, the expiration time is 180 days (15,552,000 seconds).
-    expires_in: u64,
+    pub expires_in: u64,
     /// Scopes are used in the process of authorization and consent for APIs, allowing the application to specify what access it is requesting and for the user to grant access to specific resources.
-    scope: String,
+    pub scope: String,
     /// Identification number (Mercado Pago ID) automatically generated when an account is created on Mercado Pago. It is a unique number that identifies the Mercado Pago seller and is the owner of the application.
-    user_id: u64,
+    pub user_id: u64,
     /// Code for temporal grants used to obtain access tokens so that authorization and access to resources remain valid before the expiration of the access token's validity period.
     ///
     /// Only usable once.
-    refresh_token: String,
+    pub refresh_token: String,
     /// Public key of the application, which is typically used in the frontend and allows, for example, knowledge of payment methods and data encryption of the card.
-    public_key: String,
+    pub public_key: String,
     /// Indicates whether the application is in production mode or test mode.
-    live_mode: bool,
+    pub live_mode: bool,
 }
 /// Create an access token integrating an account to an application
 ///

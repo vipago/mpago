@@ -11,7 +11,7 @@ use crate::payer::{AdditionalInfoPayer, Payer};
 ///
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_id/put>
 #[skip_serializing_none]
-#[derive(Serialize, Debug, Default)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct PaymentUpdateOptions {
     /// It's a boolean field that exists in two-step payments (such as debit cards). In this type of payment, which is done asynchronously, first, the purchase amount is reserved (capture = false). This amount is captured and not immediately debited from the account. When the money is actually transferred to the collector (the recipient of the payment), the capture of the amount is performed (capture = true).
     pub capture: Option<bool>,
@@ -27,7 +27,7 @@ pub struct PaymentUpdateOptions {
 ///
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get>
 #[skip_serializing_none]
-#[derive(Serialize, Debug, Default, Clone)]
+#[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct PaymentSearchOptions {
     /// Parameter used for sorting a list of payments.
     pub sort: Option<PaymentSearchSort>,
@@ -62,7 +62,7 @@ pub struct PaymentSearchOptions {
 /// Parameter used to define the search interval for payments.
 ///
 /// It is related to `begin_date` and `end_date`
-#[derive(Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentSearchRange {
     DateApproved,
@@ -72,7 +72,7 @@ pub enum PaymentSearchRange {
 }
 
 /// Sorts the payment in ascending or descending order.
-#[derive(Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq)]
 pub enum PaymentSearchCriteria {
     #[serde(rename = "asc")]
     Ascending,
@@ -81,7 +81,7 @@ pub enum PaymentSearchCriteria {
 }
 
 /// Parameter used for sorting a list of payments.
-#[derive(Serialize, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, Debug, Clone, Copy, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentSearchSort {
     DateApproved,
@@ -95,7 +95,7 @@ pub enum PaymentSearchSort {
 /// Essential information of Payment response.
 ///
 /// Used in [`PaymentSearchResponse`] to save memory.
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct PartialPaymentResult {
     pub id: u64,
     /// Payment create date. [ISO8601](https://www.ionos.com/digitalguide/websites/web-development/iso-8601/) format.
@@ -142,14 +142,14 @@ pub struct PartialPaymentResult {
 /// Response from `/v1/payments/search`
 ///
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get>
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct PaymentSearchResponse {
     pub paging: Paging,
     pub results: Vec<PartialPaymentResult>,
 }
 
 /// Pagination information for search results.
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Paging {
     /// Total number of items in the charge.
     pub total: usize,
@@ -166,7 +166,7 @@ pub struct Paging {
 ///
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post>
 #[skip_serializing_none]
-#[derive(Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct PaymentCreateOptions {
     /// At the Payments level, it's primarily data, and we forward this information to other APIs, such as Risco, for scoring and fraud prevention, and to Taxes to determine them for international payments.
     pub additional_info: AdditionalInfo,
@@ -250,7 +250,7 @@ impl Default for PaymentCreateOptions {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct PaymentResponse {
     pub id: u64,
     /// Payment create date. [ISO8601](https://www.ionos.com/digitalguide/websites/web-development/iso-8601/) format.
@@ -344,7 +344,7 @@ pub struct PaymentResponse {
 }
 
 /// Information about the application that processes the payment and receives regulatory data.
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct PaymentPointOfInteraction {
     pub r#type: PaymentTypeId,
     pub sub_type: Option<String>,
@@ -355,7 +355,7 @@ pub struct PaymentPointOfInteraction {
 }
 
 /// Information about the pending payment that was generated.
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct TransactionData {
     /// Base64 representation of the QR code image to be scanned for payment completion.
     pub qr_code_base64: Option<String>,

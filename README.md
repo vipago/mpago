@@ -1,2 +1,2 @@
 # mpago
-SDK para o mercado pago (jk)
+SDK para o mercado pago

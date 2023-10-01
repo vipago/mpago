@@ -1,2 +1,2 @@
-# merdadopago
-SDK para a merda do mercado pago (jk)
+# mpago
+SDK para o mercado pago (jk)

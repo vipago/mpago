@@ -77,6 +77,7 @@ impl PaymentCreateBuilder {
     ///    .into_iter(),
     ///);
     /// ```
+    #[must_use]
     pub fn set_items(mut self, items: impl Iterator<Item = ProductItem>) -> Self {
         let builder_items = &mut self.0.additional_info.items;
 
@@ -122,6 +123,7 @@ impl PaymentCreateBuilder {
     ///    .into_iter(),
     ///);
     /// ```
+    #[must_use]
     pub fn add_items(mut self, items: impl Iterator<Item = ProductItem>) -> Self {
         let builder_items = &mut self.0.additional_info.items;
 
@@ -131,6 +133,9 @@ impl PaymentCreateBuilder {
     }
 
     /// Send the request
+    ///
+    /// # Errors
+    /// This may fail if there's a network or a serialization issue.
     pub async fn send(
         self,
         mp_client: &MercadoPagoClient,
@@ -172,13 +177,13 @@ impl PaymentCreateBuilder {
     /// # Docs
     /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post>
     pub fn create(
-        description: impl ToString,
+        description: impl Into<String>,
         payer: Payer,
         payment_method_id: PaymentMethodId,
         transaction_amount: Decimal,
     ) -> PaymentCreateBuilder {
         PaymentCreateBuilder(PaymentCreateOptions {
-            description: Some(description.to_string()),
+            description: Some(description.into()),
             additional_info: AdditionalInfo {
                 ip_address: None,
                 items: vec![],

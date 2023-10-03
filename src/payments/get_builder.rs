@@ -25,13 +25,16 @@ use super::types::PaymentResponse;
 pub struct PaymentGetBuilder(pub u64);
 
 impl PaymentGetBuilder {
-    /// Send the request
+    /// Send the request and returns the matching payments
+    ///
+    /// # Errors
+    /// Sending the request may fail due to network or serialization issues
     pub async fn send(
         self,
         mp_client: &MercadoPagoClient,
     ) -> Result<PaymentResponse, MercadoPagoRequestError> {
         let res = mp_client
-            .start_request(Method::GET, format!("/v1/payments/{}", self.0))
+            .start_request(Method::GET, &format!("/v1/payments/{}", self.0))
             .send()
             .await?;
 
@@ -63,14 +66,14 @@ mod tests {
             .await
             .unwrap();
 
-        println!("{get_payment:?}")
+        println!("{get_payment:?}");
     }
 
     #[tokio::test]
     async fn fail_get_payment() {
         let mp_client = create_test_client();
 
-        let get_payment = PaymentGetBuilder(1234567890).send(&mp_client).await;
+        let get_payment = PaymentGetBuilder(1_234_567_890).send(&mp_client).await;
 
         assert!(get_payment.is_err());
     }

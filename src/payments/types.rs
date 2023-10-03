@@ -91,7 +91,6 @@ pub enum PaymentSearchSort {
     MoneyReleaseDate,
 }
 
-/// # PartialPaymentResult
 /// Essential information of Payment response.
 ///
 /// Used in [`PaymentSearchResponse`] to save memory.
@@ -136,7 +135,6 @@ pub struct PartialPaymentResult {
     pub processing_mode: PaymentProcessingMode,
 }
 
-/// # PaymentSearchResponse
 /// Used in pagination of [`PaymentSearchBuilder`](crate::payments::PaymentSearchBuilder)
 ///
 /// Response from `/v1/payments/search`
@@ -232,7 +230,7 @@ impl Default for PaymentCreateOptions {
             coupon_amount: None,
             coupon_code: None,
             date_of_expiration: None,
-            description: Some("".to_string()),
+            description: Some(String::new()),
             differential_pricing_id: None,
             external_reference: None,
             installments: 1,

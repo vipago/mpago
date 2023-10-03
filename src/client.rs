@@ -28,13 +28,21 @@ impl MercadoPagoClient {
     ///
     /// client.start_request(request::Method::POST, "/v1/payment_methods")
     /// ```
-    pub fn start_request(&self, method: Method, path: impl ToString) -> reqwest::RequestBuilder {
+    pub(crate) fn start_request(
+        &self,
+        method: Method,
+        path: impl Into<String>,
+    ) -> reqwest::RequestBuilder {
         self.client_http
-            .request(method, format!("{}{}", self.base_url, path.to_string()))
+            .request(method, format!("{}{}", self.base_url, path.into()))
             .bearer_auth(&self.access_token)
     }
 
-    ///Check if credentials (`access_token`) are valid
+    /// Check if credentials (`access_token`) are valid
+    ///
+    /// # Errors
+    /// This returns an error if the credentials are invalid, or if it couldn't complete the
+    /// request
     pub async fn check_credentials(&self) -> Result<(), MercadoPagoRequestError> {
         let response = self
             .start_request(Method::GET, "/v1/payment_methods")
@@ -58,21 +66,23 @@ pub struct MercadoPagoClientBuilder {
 
 impl MercadoPagoClientBuilder {
     /// Create a new client builder
-    pub fn builder(access_token: impl ToString) -> MercadoPagoClientBuilder {
+    #[must_use]
+    pub fn builder(access_token: impl Into<String>) -> Self {
         MercadoPagoClientBuilder {
-            access_token: access_token.to_string(),
+            access_token: access_token.into(),
             base_url: API_BASE_URL.to_string(),
         }
     }
 
     /// Make the client use a custom base url.
-    pub fn with_base_url(mut self, url: impl ToString) -> Self {
-        self.base_url = url.to_string();
-
+    #[must_use]
+    pub fn with_base_url(mut self, url: impl Into<String>) -> Self {
+        self.base_url = url.into();
         self
     }
 
     /// Build a [`MercadoPagoClient`] with the current builder.
+    #[must_use]
     pub fn build(self) -> MercadoPagoClient {
         MercadoPagoClient {
             access_token: self.access_token,
@@ -94,6 +104,6 @@ mod tests {
             MercadoPagoClientBuilder::builder(std::env::var("MERCADO_PAGO_ACCESS").unwrap())
                 .build();
 
-        assert!(client.check_credentials().await.is_ok())
+        assert!(client.check_credentials().await.is_ok());
     }
 }

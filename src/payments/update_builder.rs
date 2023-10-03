@@ -36,12 +36,15 @@ pub struct PaymentUpdateBuilder {
 
 impl PaymentUpdateBuilder {
     /// Send the request
+    ///
+    /// # Errors
+    /// This may fail if there's a network or a serialization issue.
     pub async fn send(
         self,
         mp_client: &MercadoPagoClient,
     ) -> Result<PaymentResponse, MercadoPagoRequestError> {
         let res = mp_client
-            .start_request(Method::PUT, format!("/v1/payments/{}", self.id))
+            .start_request(Method::PUT, &format!("/v1/payments/{}", self.id))
             .json(&self.options)
             .send()
             .await?;
@@ -50,12 +53,15 @@ impl PaymentUpdateBuilder {
     }
 
     /// Send a request to cancel the payment
+    ///
+    /// # Errors
+    /// This may fail if there's a network or a serialization issue.
     pub async fn cancel_payment(
         self,
         mp_client: &MercadoPagoClient,
     ) -> Result<PaymentResponse, MercadoPagoRequestError> {
         let res = mp_client
-            .start_request(Method::PUT, format!("/v1/payments/{}", self.id))
+            .start_request(Method::PUT, &format!("/v1/payments/{}", self.id))
             .json(&PaymentUpdateOptions {
                 status: Some(PaymentStatus::Cancelled),
                 ..Default::default()
@@ -69,6 +75,9 @@ impl PaymentUpdateBuilder {
 
 impl PaymentResponse {
     /// Send a request to cancel the payment
+    ///
+    /// # Errors
+    /// This may fail if there's a network or a serialization issue.
     pub async fn cancel_payment(
         self,
         mp_client: &MercadoPagoClient,
@@ -87,6 +96,9 @@ impl PaymentResponse {
 
 impl PartialPaymentResult {
     /// Send a request to cancel the payment
+    ///
+    /// # Errors
+    /// This may fail if there's a network or a serialization issue.
     pub async fn cancel_payment(
         self,
         mp_client: &MercadoPagoClient,

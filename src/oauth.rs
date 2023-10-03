@@ -84,25 +84,27 @@ pub struct OAuthResponseBody {
 ///
 /// # Docs
 /// <https://www.mercadopago.com.br/developers/pt/reference/oauth/_oauth_token/post>
+///
+/// # Errors
+/// This may fail if there's a network or a serialization issue.
 pub async fn create_access(
-    client_id: impl ToString,
-    client_secret: impl ToString,
-    code: impl ToString,
-    redirect_uri: impl ToString,
+    client_id: impl Into<String>,
+    client_secret: impl Into<String>,
+    code: impl Into<String>,
+    redirect_uri: impl Into<String>,
     base_url: Option<String>,
 ) -> Result<OAuthResponseBody, MercadoPagoRequestError> {
     let client_http = reqwest::Client::new();
-
     let authorization_response = client_http
         .post(format!(
             "{}/oauth/token",
             base_url.unwrap_or_else(|| API_BASE_URL.to_string())
         ))
         .json(&OAuthRequestBody::AuthorizationCode {
-            client_secret: client_secret.to_string(),
-            client_id: client_id.to_string(),
-            code: code.to_string(),
-            redirect_uri: redirect_uri.to_string(),
+            client_secret: client_secret.into(),
+            client_id: client_id.into(),
+            code: code.into(),
+            redirect_uri: redirect_uri.into(),
         })
         .send()
         .await?;
@@ -133,10 +135,13 @@ pub async fn create_access(
 ///
 /// # Docs
 /// <https://www.mercadopago.com.br/developers/pt/reference/oauth/_oauth_token/post>
+///
+/// # Errors
+/// This may fail if there's a network or a serialization issue.
 pub async fn refresh_access(
-    client_id: impl ToString,
-    client_secret: impl ToString,
-    refresh_token: impl ToString,
+    client_id: impl Into<String>,
+    client_secret: impl Into<String>,
+    refresh_token: impl Into<String>,
     base_url: Option<String>,
 ) -> Result<OAuthResponseBody, MercadoPagoRequestError> {
     let client_http = reqwest::Client::new();
@@ -144,12 +149,12 @@ pub async fn refresh_access(
     let authorization_response = client_http
         .post(format!(
             "{}/oauth/token",
-            base_url.unwrap_or_else(|| API_BASE_URL.to_string())
+            base_url.unwrap_or_else(|| API_BASE_URL.into())
         ))
         .json(&OAuthRequestBody::RefreshToken {
-            client_secret: client_secret.to_string(),
-            client_id: client_id.to_string(),
-            refresh_token: refresh_token.to_string(),
+            client_secret: client_secret.into(),
+            client_id: client_id.into(),
+            refresh_token: refresh_token.into(),
         })
         .send()
         .await?;

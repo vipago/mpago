@@ -5,7 +5,7 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use thiserror::Error;
 
 /// Used for solving json responses from Mercado Pago. If there is an error, [`MercadoPagoRequestError`] handles both the request body errors from Mercado Pago and Reqwest errors.
-pub async fn resolve_json<T>(response: Response) -> Result<T, MercadoPagoRequestError>
+pub(crate) async fn resolve_json<T>(response: Response) -> Result<T, MercadoPagoRequestError>
 where
     T: DeserializeOwned,
 {
@@ -58,7 +58,8 @@ pub struct MercadoPagoErrorCause {
 
 /// Function to create client for testing
 #[cfg(test)]
-pub fn create_test_client() -> MercadoPagoClient {
+#[must_use]
+pub(crate) fn create_test_client() -> MercadoPagoClient {
     use crate::client::MercadoPagoClientBuilder;
 
     dotenvy::dotenv().ok();
@@ -68,7 +69,8 @@ pub fn create_test_client() -> MercadoPagoClient {
 
 /// Function to return test payment option
 #[cfg(test)]
-pub fn get_test_payment_options() -> PaymentCreateOptions {
+#[must_use]
+pub(crate) fn get_test_payment_options() -> PaymentCreateOptions {
     use crate::{payer::Payer, payments::types::PaymentMethodId, Decimal};
 
     PaymentCreateOptions {

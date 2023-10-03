@@ -39,7 +39,8 @@ impl PaymentSearchBuilder {
     /// This function creates a stream of payments, it goes through all the pages.
     ///
     /// When you fetch a payment, it will check if you reached the end of a page, if you have, it will fetch another page and return the first payment on that page, other wise it gives you the next payment from the current page.
-    pub async fn fetch_all_streamed<'a>(
+    #[must_use]
+    pub fn fetch_all_streamed<'a>(
         self,
         mp_client: &'a MercadoPagoClient,
     ) -> Pin<Box<dyn Stream<Item = Result<PartialPaymentResult, MercadoPagoRequestError>> + 'a>>
@@ -92,6 +93,9 @@ impl PaymentSearchBuilder {
 
 impl PartialPaymentResult {
     /// Returns the full payment information
+    ///
+    /// # Errors
+    /// This may fail if there's a network or a serialization issue.
     pub async fn fetch_full_payment(
         self,
         mp_client: &MercadoPagoClient,
@@ -114,8 +118,7 @@ mod tests {
             limit: Some(2),
             ..Default::default()
         })
-        .fetch_all_streamed(&mp_client)
-        .await;
+        .fetch_all_streamed(&mp_client);
 
         if let Some(Ok(v)) = response.next().await {
             assert!(v.fetch_full_payment(&mp_client).await.is_ok());

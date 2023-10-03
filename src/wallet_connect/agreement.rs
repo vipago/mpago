@@ -1,8 +1,24 @@
+//! An agreement is a authorization link received by the buyer to allow the seller to access the
+//! Mercado Pago wallet to to debit the payment.
+//!
+//! # Examples
+//! ```
+//! use mpago::wallet_connect::agreement::Agreement;
+//! #[tokio::main]
+//! async fn main() {
+//!     let agreement = Agreement::builder("https://example.org/callback")
+//!       .send()
+//!       .await
+//!       .expect("Failed to create agreement");
+//!     println!("Agreement {{\n  id: {:#?},\n  uri: {:#?}\n}}", agreement.id(), agreement.uri());
+//! }
+//! ```
+
 use reqwest::Method;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-
 use crate::client::MercadoPagoClient;
+
 /// Contains information about the actions the user should take and the amount to be paid
 #[derive(Deserialize, Serialize)]
 pub struct Data {

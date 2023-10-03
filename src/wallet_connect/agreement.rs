@@ -110,6 +110,16 @@ pub struct Agreement {
     agreement_uri: String,
 }
 impl Agreement {
+    pub fn builder(return_url: String) -> Builder {
+        Builder {
+            return_url,
+            client_id: None,
+            platform_id: None,
+            agreement_data: None,
+            external_flow_id: None,
+            external_user: None,
+        }
+    }
     /// Returns a reference to the agreement id in Self
     #[must_use]
     pub fn id(&self) -> &str {

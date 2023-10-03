@@ -14,10 +14,10 @@
 //! }
 //! ```
 
+use crate::client::MercadoPagoClient;
 use reqwest::Method;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use crate::client::MercadoPagoClient;
 
 /// Contains information about the actions the user should take and the amount to be paid
 #[derive(Deserialize, Serialize)]

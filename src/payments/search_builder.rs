@@ -5,11 +5,11 @@ use tokio_stream::Stream;
 
 use super::{
     get_builder::PaymentGetBuilder,
-    types::{PartialPaymentResult, PaymentResponse, PaymentSearchOptions, PaymentSearchResponse},
+    types::{PartialPaymentResult, PaymentResponse, PaymentSearchOptions},
 };
 use crate::{
     client::MercadoPagoClient,
-    common::{resolve_json, MercadoPagoRequestError},
+    common::{resolve_json, MercadoPagoRequestError, SearchResponse},
 };
 
 /// Builder for search payments
@@ -66,7 +66,7 @@ impl PaymentSearchBuilder {
                             continue;
                         }
                     };
-                let page = match resolve_json::<PaymentSearchResponse>(res).await {
+                let page = match resolve_json::<SearchResponse<PartialPaymentResult>>(res).await {
                     Ok(page) => page,
                     // .next() retorna Some(Err(MercadoPagoRequestError))
                     Err(err) => {

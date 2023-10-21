@@ -1,4 +1,4 @@
-use iso_currency::Currency;
+use crate::common::CurrencyId;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_enum_str::{Deserialize_enum_str, Serialize_enum_str};
@@ -134,29 +134,6 @@ pub struct PartialPaymentResult {
     pub transaction_amount: Decimal,
     pub installments: u32,
     pub processing_mode: PaymentProcessingMode,
-}
-
-/// # PaymentSearchResponse
-/// Used in pagination of [`PaymentSearchBuilder`](crate::payments::PaymentSearchBuilder)
-///
-/// Response from `/v1/payments/search`
-///
-/// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get>
-#[derive(Deserialize, Serialize, Debug)]
-pub struct PaymentSearchResponse {
-    pub paging: Paging,
-    pub results: Vec<PartialPaymentResult>,
-}
-
-/// Pagination information for search results.
-#[derive(Deserialize, Serialize, Debug)]
-pub struct Paging {
-    /// Total number of items in the charge.
-    pub total: usize,
-    /// The maximum number of entries to be returned.
-    pub limit: usize,
-    /// Total number of skiped items
-    pub offset: usize,
 }
 
 /// # PaymentCreateOptions
@@ -454,67 +431,6 @@ pub struct PaymentTransactionDetails {
     pub financial_institution: Option<String>,
     pub payable_deferral_period: Option<String>,
     pub acquirer_reference: Option<String>,
-}
-
-#[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq)]
-pub enum CurrencyId {
-    ARS,
-    BRL,
-    CLP,
-    MXN,
-    COP,
-    PEN,
-    UYU,
-    VES,
-    MCN,
-    BTC,
-    USD,
-    USDP,
-    DCE,
-    ETH,
-    FDI,
-    CDB,
-    #[serde(other)]
-    Unknown(String),
-}
-
-impl From<Currency> for CurrencyId {
-    /// Parse ISO currency to `CurrencyId`
-    fn from(value: Currency) -> Self {
-        match value {
-            Currency::ARS => Self::ARS,
-            Currency::BRL => Self::BRL,
-            Currency::CLP => Self::CLP,
-            Currency::MXN => Self::MXN,
-            Currency::COP => Self::COP,
-            Currency::PEN => Self::PEN,
-            Currency::UYU => Self::UYU,
-            Currency::VES => Self::VES,
-            Currency::USD => Self::USD,
-            _ => Self::Unknown(value.to_string()),
-        }
-    }
-}
-
-impl TryFrom<CurrencyId> for Currency {
-    type Error = String;
-
-    /// Try parse `CurrencyId` to ISO currency
-    fn try_from(value: CurrencyId) -> Result<Self, Self::Error> {
-        match value {
-            CurrencyId::ARS => Ok(Currency::ARS),
-            CurrencyId::BRL => Ok(Currency::BRL),
-            CurrencyId::CLP => Ok(Currency::CLP),
-            CurrencyId::MXN => Ok(Currency::MXN),
-            CurrencyId::COP => Ok(Currency::COP),
-            CurrencyId::PEN => Ok(Currency::PEN),
-            CurrencyId::UYU => Ok(Currency::UYU),
-            CurrencyId::VES => Ok(Currency::VES),
-            CurrencyId::USD => Ok(Currency::USD),
-            CurrencyId::Unknown(v) => v.parse::<Currency>().map_err(|e| e.to_string()),
-            v => Err(format!("Unsupported currency: {v}")),
-        }
-    }
 }
 
 /// Detail of the outcome of the collection.

@@ -41,6 +41,22 @@ pub struct MercadoPagoError {
     pub cause: Option<Vec<MercadoPagoErrorCause>>,
 }
 
+#[derive(Deserialize, Serialize, Debug)]
+pub struct SearchResponse<T> {
+    pub paging: Paging,
+    pub results: Vec<T>,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct Paging {
+    /// Total number of items in the charge.
+    pub total: usize,
+    /// The maximum number of entries to be returned.
+    pub limit: usize,
+    /// Total number of skiped items
+    pub offset: usize,
+}
+
 #[derive(Deserialize_enum_str, Serialize_enum_str, Debug, PartialEq, Eq, Default)]
 pub enum CurrencyId {
     ARS,

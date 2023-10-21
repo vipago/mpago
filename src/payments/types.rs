@@ -136,29 +136,6 @@ pub struct PartialPaymentResult {
     pub processing_mode: PaymentProcessingMode,
 }
 
-/// # PaymentSearchResponse
-/// Used in pagination of [`PaymentSearchBuilder`](crate::payments::PaymentSearchBuilder)
-///
-/// Response from `/v1/payments/search`
-///
-/// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments_search/get>
-#[derive(Deserialize, Serialize, Debug)]
-pub struct PaymentSearchResponse {
-    pub paging: Paging,
-    pub results: Vec<PartialPaymentResult>,
-}
-
-/// Pagination information for search results.
-#[derive(Deserialize, Serialize, Debug)]
-pub struct Paging {
-    /// Total number of items in the charge.
-    pub total: usize,
-    /// The maximum number of entries to be returned.
-    pub limit: usize,
-    /// Total number of skiped items
-    pub offset: usize,
-}
-
 /// # PaymentCreateOptions
 /// Used as the request body for creating payments
 ///

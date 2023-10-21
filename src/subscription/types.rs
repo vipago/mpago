@@ -14,18 +14,18 @@ pub struct SubscriptionCreateOptions {
     pub status: SubscriptionStatus,
 }
 
-#[derive(Serialize, Deserialize, Default, Debug)]
+#[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct SubscriptionSearchParams {
-    q: Option<String>,
-    payer_id: Option<u16>,
-    payer_email: Option<String>,
-    preapproval_plan_id: Option<String>,
+    pub q: Option<String>,
+    pub payer_id: Option<u32>,
+    pub payer_email: Option<String>,
+    pub preapproval_plan_id: Option<String>,
     #[serde(with = "rust_decimal::serde::float_option")]
-    transaction_amount: Option<Decimal>,
-    semaphore: Option<SubscriptionSemaphore>,
-    sort: Option<String>,
-    offset: Option<u32>,
-    limit: Option<u32>,
+    pub transaction_amount: Option<Decimal>,
+    pub semaphore: Option<SubscriptionSemaphore>,
+    pub sort: Option<String>,
+    pub offset: Option<usize>,
+    pub limit: Option<usize>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -72,17 +72,14 @@ pub struct SubscriptionSummarized {
     pub quotas: Option<u32>,
     pub charge_quantity: Option<u32>,
     pub pending_charge_quantity: Option<u32>,
-    #[serde(with = "rust_decimal::serde::float_option")]
     pub charged_amount: Option<Decimal>,
-    #[serde(with = "rust_decimal::serde::float_option")]
     pub pending_charge_amount: Option<Decimal>,
     pub semaphore: Option<SubscriptionSemaphore>,
     pub last_charged_date: Option<String>,
-    #[serde(with = "rust_decimal::serde::float_option")]
     pub last_charged_amount: Option<Decimal>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum SubscriptionSemaphore {
     Green,

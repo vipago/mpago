@@ -23,7 +23,7 @@ pub struct Payer {
     pub last_name: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Default)]
 pub struct AdditionalInfoPayer {
     pub first_name: Option<String>,
     pub last_name: Option<String>,

@@ -7,7 +7,7 @@ use sha2::Sha256;
 
 type HmacSha256 = Hmac<Sha256>;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "snake_case")]
 pub struct WebhookBody {
     pub id: u64,
@@ -61,7 +61,7 @@ impl WebhookBody {
     }
 }
 
-#[derive(Deserialize, PartialEq, Eq)]
+#[derive(Deserialize, PartialEq, Eq, Debug)]
 #[serde(rename_all = "snake_case")]
 pub enum WebhookType {
     Payment,

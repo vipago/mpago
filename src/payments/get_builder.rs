@@ -51,7 +51,7 @@ mod tests {
     async fn get_payment() {
         let mp_client = create_test_client();
 
-        let create_payment = PaymentCreateBuilder(get_test_payment_options())
+        let create_payment = PaymentCreateBuilder(get_test_payment_options(), None)
             .send(&mp_client)
             .await
             .unwrap();

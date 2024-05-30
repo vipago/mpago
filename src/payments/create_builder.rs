@@ -15,6 +15,7 @@ use super::types::{AdditionalInfo, PaymentCreateOptions, PaymentMethodId, Produc
 /// # Arguments
 ///
 /// * `options` - Options to create the payment.
+/// * `idempotency_key` - Idempotency key is a unique value that is used to prevent duplicate processing of requests
 ///
 /// # Example
 /// ```
@@ -31,13 +32,14 @@ use super::types::{AdditionalInfo, PaymentCreateOptions, PaymentMethodId, Produc
 ///             ..Default::default()
 ///         },
 ///         ..Default::default()
-///     }
+///     },
+///     None
 /// )
 /// ```
 ///
 /// # Docs
 /// <https://www.mercadopago.com.br/developers/pt/reference/payments/_payments/post>
-pub struct PaymentCreateBuilder(pub PaymentCreateOptions);
+pub struct PaymentCreateBuilder(pub PaymentCreateOptions, pub Option<String>);
 
 impl PaymentCreateBuilder {
     /// Sets the items for `additional_info.items`
@@ -61,7 +63,8 @@ impl PaymentCreateBuilder {
     ///             ..Default::default()
     ///         },
     ///         ..Default::default()
-    ///     }
+    ///     },
+    ///    None
     /// )
     /// .set_items(
     ///     [
@@ -106,7 +109,8 @@ impl PaymentCreateBuilder {
     ///             ..Default::default()
     ///         },
     ///         ..Default::default()
-    ///     }
+    ///     },
+    ///   None
     /// )
     /// .add_items(
     ///     [
@@ -135,11 +139,15 @@ impl PaymentCreateBuilder {
         self,
         mp_client: &MercadoPagoClient,
     ) -> Result<PaymentResponse, MercadoPagoRequestError> {
-        let res = mp_client
+        let mut req = mp_client
             .start_request(Method::POST, "/v1/payments")
-            .json(&self.0)
-            .send()
-            .await?;
+            .json(&self.0);
+
+        if let Some(idempotency_key) = self.1 {
+            req = req.header("X-Idempotency-Key", idempotency_key);
+        }
+
+        let res = req.send().await?;
 
         resolve_json::<PaymentResponse>(res).await
     }
@@ -152,6 +160,7 @@ impl PaymentCreateBuilder {
     /// * `payer` - Payer info
     /// * `payment_method_id` - Indicates the identifier of the selected payment method for making the payment.
     /// * `transaction_amount` - Amount of the payment
+    /// * `idempotency_key` - Idempotency key is a unique value that is used to prevent duplicate processing of requests
     ///
     /// # Example
     ///
@@ -176,20 +185,24 @@ impl PaymentCreateBuilder {
         payer: Payer,
         payment_method_id: PaymentMethodId,
         transaction_amount: Decimal,
+        idempotency_key: Option<String>,
     ) -> PaymentCreateBuilder {
-        PaymentCreateBuilder(PaymentCreateOptions {
-            description: Some(description.to_string()),
-            additional_info: AdditionalInfo {
-                ip_address: None,
-                items: vec![],
-                payer: None,
-                shipments: None,
+        PaymentCreateBuilder(
+            PaymentCreateOptions {
+                description: Some(description.to_string()),
+                additional_info: AdditionalInfo {
+                    ip_address: None,
+                    items: vec![],
+                    payer: None,
+                    shipments: None,
+                },
+                payer,
+                payment_method_id,
+                transaction_amount,
+                ..Default::default()
             },
-            payer,
-            payment_method_id,
-            transaction_amount,
-            ..Default::default()
-        })
+            idempotency_key,
+        )
     }
 }
 
@@ -207,7 +220,7 @@ mod tests {
     async fn payment_create() {
         let mp_client = create_test_client();
 
-        let res = PaymentCreateBuilder(get_test_payment_options())
+        let res = PaymentCreateBuilder(get_test_payment_options(), None)
             .send(&mp_client)
             .await
             .unwrap();
@@ -219,9 +232,12 @@ mod tests {
     async fn fail_payment_create() {
         let mp_client = create_test_client();
 
-        let res = PaymentCreateBuilder(PaymentCreateOptions {
-            ..Default::default()
-        })
+        let res = PaymentCreateBuilder(
+            PaymentCreateOptions {
+                ..Default::default()
+            },
+            None,
+        )
         .send(&mp_client)
         .await;
 
@@ -232,7 +248,7 @@ mod tests {
     async fn create_with_products() {
         let mp_client = create_test_client();
 
-        let builder = PaymentCreateBuilder(get_test_payment_options()).add_items(
+        let builder = PaymentCreateBuilder(get_test_payment_options(), None).add_items(
             [ProductItem {
                 quantity: Some("1".to_string()),
                 unit_price: Some(Decimal::new(10, 0)),

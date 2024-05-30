@@ -10,7 +10,7 @@ type HmacSha256 = Hmac<Sha256>;
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "snake_case")]
 pub struct WebhookBody {
-    pub id: u64,
+    pub id: String,
     pub live_mode: bool,
     pub r#type: WebhookType,
     pub date_created: String,
@@ -116,7 +116,7 @@ mod webhook_tests {
     #[test]
     fn test_webhook_valid_without_request_id() {
         let body = WebhookBody {
-            id: 1234567890,
+            id: "1234567890".to_owned(),
             live_mode: false,
             r#type: WebhookType::Payment,
             date_created: "2021-01-01
@@ -138,7 +138,7 @@ mod webhook_tests {
     #[test]
     fn test_webhook_valid_with_request_id() {
         let body = WebhookBody {
-            id: 1234567890,
+            id: "1234567890".to_owned(),
             live_mode: false,
             r#type: WebhookType::Payment,
             date_created: "2021-01-01

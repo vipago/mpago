@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use iso_currency::Currency;
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
@@ -213,6 +215,7 @@ pub struct PaymentCreateOptions {
     pub token: Option<String>,
     #[serde(with = "rust_decimal::serde::float")]
     pub transaction_amount: Decimal,
+    pub metadata: HashMap<String, serde_json::Value>,
 }
 
 impl Default for PaymentCreateOptions {
@@ -246,6 +249,7 @@ impl Default for PaymentCreateOptions {
             statement_descriptor: None,
             token: None,
             transaction_amount: Decimal::new(0, 1),
+            metadata: HashMap::new(),
         }
     }
 }
@@ -341,6 +345,7 @@ pub struct PaymentResponse {
     pub mechant_number: Option<String>,
     /// Information about the application that processes the payment and receives regulatory data.
     pub point_of_interaction: PaymentPointOfInteraction,
+    pub metadata: HashMap<String, serde_json::Value>,
 }
 
 /// Information about the application that processes the payment and receives regulatory data.

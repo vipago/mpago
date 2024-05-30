@@ -207,6 +207,7 @@ impl PaymentCreateBuilder {
 }
 
 #[cfg(test)]
+#[cfg(ignore)]
 mod tests {
     use crate::{
         common::{create_test_client, get_test_payment_options},

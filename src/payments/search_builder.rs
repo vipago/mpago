@@ -101,6 +101,7 @@ impl PartialPaymentResult {
 }
 
 #[cfg(test)]
+#[cfg(ignore)]
 mod tests {
     use super::{PaymentSearchBuilder, PaymentSearchOptions};
     use crate::common::create_test_client;

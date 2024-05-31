@@ -17,6 +17,12 @@ pub struct WebhookBody {
     pub user_id: u64,
     pub api_version: String,
     pub action: String,
+    pub data: Option<WebhookData>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct WebhookData {
+    pub id: Option<u64>,
 }
 
 impl WebhookBody {
@@ -125,6 +131,7 @@ mod webhook_tests {
             user_id: 1234567890,
             api_version: "v1".to_string(),
             action: "payment.created".to_string(),
+            data: None,
         };
 
         assert!(body.valid_origin(
@@ -147,6 +154,7 @@ mod webhook_tests {
             user_id: 1234567890,
             api_version: "v1".to_string(),
             action: "payment.created".to_string(),
+            data: None,
         };
 
         assert!(body.valid_origin(

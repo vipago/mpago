@@ -50,9 +50,9 @@ pub struct PayerAddress {
 #[derive(Deserialize, Serialize, Debug)]
 pub struct PayerIdentification {
     /// It refers to the type of identification. It can be one of the following types.
-    pub r#type: IdentificationType,
+    pub r#type: Option<IdentificationType>,
     /// The number refers to the identifier of the user in question. If it's a CPF, for example, it will have 11 digits.
-    pub number: String,
+    pub number: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug)]

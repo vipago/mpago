@@ -22,7 +22,7 @@ pub struct WebhookBody {
 
 #[derive(Deserialize, Debug)]
 pub struct WebhookData {
-    pub id: Option<u64>,
+    pub id: Option<String>,
 }
 
 impl WebhookBody {

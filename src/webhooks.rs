@@ -10,7 +10,8 @@ type HmacSha256 = Hmac<Sha256>;
 #[derive(Deserialize, Debug)]
 #[serde(rename_all = "snake_case")]
 pub struct WebhookBody {
-    pub id: String,
+    #[serde(deserialize_with = "serde_aux::prelude::deserialize_number_from_string")]
+    pub id: u64,
     pub live_mode: bool,
     pub r#type: WebhookType,
     pub date_created: String,
@@ -22,7 +23,8 @@ pub struct WebhookBody {
 
 #[derive(Deserialize, Debug)]
 pub struct WebhookData {
-    pub id: Option<String>,
+    #[serde(deserialize_with = "serde_aux::prelude::deserialize_option_number_from_string")]
+    pub id: Option<u64>,
 }
 
 impl WebhookBody {

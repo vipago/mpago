@@ -124,12 +124,10 @@ mod webhook_tests {
     #[test]
     fn test_webhook_valid_without_request_id() {
         let body = WebhookBody {
-            id: "1234567890".to_owned(),
+            id: 1234567890,
             live_mode: false,
             r#type: WebhookType::Payment,
-            date_created: "2021-01-01
-        00:00:00Z"
-                .to_string(),
+            date_created: "2021-01-0100:00:00Z".to_string(),
             user_id: 1234567890,
             api_version: "v1".to_string(),
             action: "payment.created".to_string(),
@@ -147,12 +145,10 @@ mod webhook_tests {
     #[test]
     fn test_webhook_valid_with_request_id() {
         let body = WebhookBody {
-            id: "1234567890".to_owned(),
+            id: 1234567890,
             live_mode: false,
             r#type: WebhookType::Payment,
-            date_created: "2021-01-01
-        00:00:00Z"
-                .to_string(),
+            date_created: "2021-01-0100:00:00Z".to_string(),
             user_id: 1234567890,
             api_version: "v1".to_string(),
             action: "payment.created".to_string(),

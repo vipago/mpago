@@ -15,6 +15,7 @@ pub struct WebhookBody {
     pub live_mode: bool,
     pub r#type: WebhookType,
     pub date_created: String,
+    #[serde(deserialize_with = "serde_aux::prelude::deserialize_number_from_string")]
     pub user_id: u64,
     pub api_version: String,
     pub action: String,
